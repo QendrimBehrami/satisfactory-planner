@@ -4,6 +4,7 @@ import { resolve } from 'path'
 import tailwindcss from '@tailwindcss/vite'
 
 export default defineConfig({
+  base: '/satisfactory-planner/',
   plugins: [
     tailwindcss(),
     svelte(),

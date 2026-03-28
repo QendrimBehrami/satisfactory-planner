@@ -21,8 +21,13 @@
 
   const nodeTypes = { production: ProductionNode };
 
-  let itemId = $state("Desc_Motor_C");
-  let rate = $state(10);
+  let itemId = $state(localStorage.getItem("itemId") ?? "Desc_Motor_C");
+  let rate = $state(Number(localStorage.getItem("rate") ?? 10));
+
+  $effect(() => {
+    localStorage.setItem("itemId", itemId);
+    localStorage.setItem("rate", String(rate));
+  });
 
   let graph = $derived(
     itemId && rate > 0

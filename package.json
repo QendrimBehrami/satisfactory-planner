@@ -1,7 +1,7 @@
 {
   "name": "satisfactory-planner",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.1.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -9,7 +9,8 @@
     "parse": "npx tsx parse.ts",
     "fetch-icons": "npx tsx fetch-icons.ts",
     "convert-icons": "npx tsx convert-icons.ts",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "deploy": "npm run build && gh-pages -d dist"
   },
   "devDependencies": {
     "@fontsource-variable/jetbrains-mono": "^5.2.8",
@@ -20,6 +21,7 @@
     "@types/sharp": "^0.31.1",
     "bits-ui": "^2.16.4",
     "clsx": "^2.1.1",
+    "gh-pages": "^6.3.0",
     "phosphor-svelte": "^3.1.0",
     "sharp": "^0.34.5",
     "svelte": "^5.53.12",
