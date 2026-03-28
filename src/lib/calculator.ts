@@ -1,32 +1,7 @@
-import type { GameData, Recipe } from './types'
-import data from '../data/data.json'
+import type { Recipe, ProductionNode } from './types'
+import { items, buildings, recipesByOutput } from './data'
 
-const gameData = data as GameData
 
-// Index: itemId → all recipes that produce this item
-const recipesByOutput: Record<string, Recipe[]> = {}
-
-for (const recipe of gameData.recipes) {
-    for (const output of recipe.outputs) {
-        if (!recipesByOutput[output.item]) {
-            recipesByOutput[output.item] = []
-        }
-        recipesByOutput[output.item].push(recipe)
-    }
-}
-
-// ── Types ──────────────────────────────────────────────────────────────────
-
-export interface ProductionNode {
-    itemId: string
-    itemName: string
-    rate: number       // items/min
-    recipe: Recipe | null
-    buildingName: string
-    machines: number
-    power: number      // MW
-    inputs: ProductionNode[]
-}
 
 // ── Helpers ────────────────────────────────────────────────────────────────
 
@@ -45,7 +20,7 @@ function getRatePerMinute(recipe: Recipe, outputItemId: string): number {
 // ── Calculator ─────────────────────────────────────────────────────────────
 
 export function calculate(itemId: string, rate: number, visited = new Set<string>()): ProductionNode {
-    const item = gameData.items[itemId]
+    const item = items[itemId]
     const recipe = getDefaultRecipe(itemId)
     const isRawResource = item?.isResource ?? false
 
@@ -56,7 +31,7 @@ export function calculate(itemId: string, rate: number, visited = new Set<string
             itemName: item?.name ?? itemId,
             rate,
             recipe: null,
-            buildingName: gameData.buildings[recipe?.buildings[0] ?? ""]?.name ?? "",
+            buildingName: buildings[recipe?.buildings[0] ?? ""]?.name ?? "",
             machines: 0,
             power: 0,
             inputs: [],
@@ -65,7 +40,7 @@ export function calculate(itemId: string, rate: number, visited = new Set<string
 
     visited.add(itemId)
 
-    const building = gameData.buildings[recipe.buildings[0]]
+    const building = buildings[recipe.buildings[0]]
     const ratePerMachine = getRatePerMinute(recipe, itemId)
     const machines = rate / ratePerMachine
     const power = machines * (building?.power ?? 0)
@@ -82,7 +57,7 @@ export function calculate(itemId: string, rate: number, visited = new Set<string
         itemName: item?.name ?? itemId,
         rate,
         recipe,
-        buildingName: gameData.buildings[recipe?.buildings[0] ?? ""]?.name ?? "",
+        buildingName: buildings[recipe?.buildings[0] ?? ""]?.name ?? "",
         machines,
         power,
         inputs,

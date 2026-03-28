@@ -4,7 +4,6 @@
   import { calculate } from "./lib/calculator";
   import { treeToGraph } from "./lib/graph";
   import ProductionNode from "./components/ProductionNode.svelte";
-
   import {
     Provider,
     Root,
@@ -16,14 +15,19 @@
     Footer,
     Inset,
   } from "$lib/components/ui/sidebar";
+  import Combobox from "./components/Combobox.svelte";
+  import { itemOptions } from "$lib/data";
 
   const nodeTypes = { production: ProductionNode };
 
   let itemId = $state("Desc_Motor_C");
   let rate = $state(10);
 
-  let tree = $derived(calculate(itemId, rate));
-  let graph = $derived(treeToGraph(tree));
+  let graph = $derived(
+    itemId && rate > 0
+      ? treeToGraph(calculate(itemId, rate))
+      : { nodes: [], edges: [] },
+  );
 </script>
 
 <Provider class="" style="">
@@ -34,19 +38,19 @@
 
     <Content class="" style="">
       <Group class="" style="">
-        <GroupLabel class="" style="">Target</GroupLabel>
+        <GroupLabel>Target</GroupLabel>
         <GroupContent class="" style="">
           <div class="flex flex-col gap-2 px-2">
-            <input
-              type="text"
+            <Combobox
               bind:value={itemId}
-              placeholder="Item ID"
-              class="border rounded px-2 py-1 text-sm w-full"
+              options={itemOptions}
+              placeholder="Select item..."
             />
+            <GroupLabel>Rate</GroupLabel>
             <input
               type="number"
               bind:value={rate}
-              placeholder="Rate/min"
+              placeholder="Items/min"
               class="border rounded px-2 py-1 text-sm w-full"
             />
           </div>

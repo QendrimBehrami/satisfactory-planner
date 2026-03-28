@@ -33,3 +33,15 @@ export interface GameData {
     buildings: Record<string, Building>
     recipes: Recipe[]
 }
+
+
+export interface ProductionNode {
+    itemId: string
+    itemName: string
+    rate: number       // items/min
+    recipe: Recipe | null
+    buildingName: string
+    machines: number
+    power: number      // MW
+    inputs: ProductionNode[]
+}

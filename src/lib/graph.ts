@@ -1,13 +1,10 @@
 import { type Node, type Edge, MarkerType } from '@xyflow/svelte'
-import type { ProductionNode } from './calculator'
-
-
+import type { ProductionNode } from './types'
 
 const NODE_WIDTH = 180
-const NODE_HEIGHT = 80
-const H_GAP = 100
-const V_GAP = 80
-
+const NODE_HEIGHT = 240
+const H_GAP = 120
+const V_GAP = 40
 
 function countLeaves(node: ProductionNode): number {
     if (node.inputs.length === 0) return 1
@@ -35,6 +32,10 @@ function buildGraph(
             isResource: node.recipe === null,
             hasParent: parentId !== null,
             buildingName: node.buildingName,
+            inputs: node.inputs.map(input => ({
+                name: input.itemName,
+                rate: input.rate,
+            })),
         },
         type: 'production',
     })
@@ -42,14 +43,10 @@ function buildGraph(
     if (parentId) {
         edges.push({
             id: `${parentId}-${id}`,
-            source: parentId,
-            target: id,
-            markerStart: {
-                type: MarkerType.ArrowClosed,
-                width: 20,
-                height: 20,
-            },
-            type: "smoothstep"
+            source: id,
+            target: parentId,
+            type: 'smoothstep',
+            markerEnd: { type: MarkerType.Arrow, width: 20, height: 20 },
         })
     }
 
