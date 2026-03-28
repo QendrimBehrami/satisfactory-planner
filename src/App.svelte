@@ -17,6 +17,7 @@
   } from "$lib/components/ui/sidebar";
   import Combobox from "./components/Combobox.svelte";
   import { itemOptions } from "$lib/data";
+  import { graphOptions } from "$lib/setttings";
 
   const nodeTypes = { production: ProductionNode };
 
@@ -25,7 +26,7 @@
 
   let graph = $derived(
     itemId && rate > 0
-      ? treeToGraph(calculate(itemId, rate))
+      ? treeToGraph(calculate(itemId, rate), $graphOptions)
       : { nodes: [], edges: [] },
   );
 </script>
@@ -56,6 +57,20 @@
           </div>
         </GroupContent>
       </Group>
+      <Group>
+        <GroupLabel>Options</GroupLabel>
+        <label class="flex items-center gap-2 px-2 text-sm">
+          <input type="checkbox" bind:checked={$graphOptions.animatedEdges} />
+          Animated edges
+        </label>
+        <label class="flex items-center gap-2 px-2 text-sm">
+          <input
+            type="checkbox"
+            bind:checked={$graphOptions.horizontalLayout}
+          />
+          Horizontal layout
+        </label>
+      </Group>
     </Content>
 
     <Footer class="" style=""></Footer>
@@ -68,7 +83,7 @@
         edges={graph.edges}
         {nodeTypes}
         fitView
-        fitViewOptions={{ padding: 0.2 }}
+        fitViewOptions={{ padding: 0.1 }}
       >
         <Background />
       </SvelteFlow>

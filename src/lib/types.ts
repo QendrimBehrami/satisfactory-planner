@@ -45,3 +45,8 @@ export interface ProductionNode {
     power: number      // MW
     inputs: ProductionNode[]
 }
+
+export interface GraphOptions {
+    animatedEdges?: boolean
+    horizontalLayout?: boolean
+}

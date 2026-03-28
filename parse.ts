@@ -32,11 +32,17 @@ function parseProducedIn(s: string): string[] {
     return [...s.matchAll(/(\w+_C)[",)]/g)].map((m) => m[1]);
 }
 
-function parseItems(s: string): RecipeItem[] {
-    return [...s.matchAll(/(Desc_\w+)'.*?Amount=(\d+)/g)].map((m) => ({
-        item: m[1],
-        amount: parseInt(m[2], 10),
-    }));
+function parseItems(s: string, itemsMap: Record<string, Item>): RecipeItem[] {
+    return [...s.matchAll(/(Desc_\w+)'.*?Amount=(\d+)/g)].map((m) => {
+        const itemId = m[1]
+        const amount = parseInt(m[2], 10)
+        const form = itemsMap[itemId]?.form
+        console.log(`${itemId}: form=${form}, amount=${amount}`)
+        return {
+            item: m[1],
+            amount: form === 'liquid' || form === 'gas' ? amount / 1000 : amount,
+        }
+    })
 }
 
 // ── Main ───────────────────────────────────────────────────────────────────
@@ -102,8 +108,8 @@ for (const entry of data) {
             );
             if (!producers.length) continue;
 
-            const inputs = parseItems(cls.mIngredients ?? "");
-            const outputs = parseItems(cls.mProduct ?? "");
+            const inputs = parseItems(cls.mIngredients ?? "", items);
+            const outputs = parseItems(cls.mProduct ?? "", items);
             if (!outputs.length) continue;
 
             recipes.push({

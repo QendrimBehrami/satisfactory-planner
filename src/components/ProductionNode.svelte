@@ -14,11 +14,15 @@
 
 <Handle
     type="source"
-    position={Position.Top}
+    position={data.horizontalLayout ? Position.Right : Position.Top}
     style={data.hasParent ? "opacity: 1" : "opacity: 0; pointer-events: none"}
 />
 
-<div class="node" class:resource={data.isResource}>
+<div
+    class="node"
+    class:resource={data.isResource}
+    class:horizontal={data.horizontal}
+>
     <!-- Header: Icon + Name + Building -->
     <div class="header">
         <img
@@ -54,13 +58,13 @@
         <div class="divider"></div>
 
         <!-- Output -->
-        <div class="section">
+        <!-- <div class="section">
             <p class="section-label">OUT</p>
             <div class="row">
                 <span class="item-name">{data.label}</span>
                 <span class="rate">{formatNumber(data.rate)}/min</span>
             </div>
-        </div>
+        </div> -->
 
         <!-- Stats -->
         <!-- <div class="divider"></div>
@@ -68,18 +72,18 @@
             <span>{formatNumber(data.machines)}×</span>
             <span>{formatNumber(data.power)} MW</span>
         </div> -->
-    {:else}
+        <!-- {:else}
         <div class="section">
             <div class="row">
                 <span class="rate">{formatNumber(data.rate)}/min</span>
             </div>
-        </div>
+        </div> -->
     {/if}
 </div>
 
 <Handle
     type="target"
-    position={Position.Bottom}
+    position={data.horizontalLayout ? Position.Left : Position.Bottom}
     style={data.isResource ? "opacity: 0" : "opacity: 1;"}
 />
 
@@ -173,5 +177,10 @@
         padding: 6px 10px;
         color: #888;
         font-size: 11px;
+    }
+
+    .horizontal {
+        min-width: 160px;
+        max-width: 160px;
     }
 </style>

@@ -1588,13 +1588,13 @@
       "inputs": [
         {
           "item": "Desc_LiquidOil_C",
-          "amount": 6000
+          "amount": 6
         }
       ],
       "outputs": [
         {
           "item": "Desc_LiquidFuel_C",
-          "amount": 4000
+          "amount": 4
         },
         {
           "item": "Desc_PolymerResin_C",
@@ -1613,7 +1613,7 @@
       "inputs": [
         {
           "item": "Desc_LiquidOil_C",
-          "amount": 3000
+          "amount": 3
         }
       ],
       "outputs": [
@@ -1623,7 +1623,7 @@
         },
         {
           "item": "Desc_HeavyOilResidue_C",
-          "amount": 1000
+          "amount": 1
         }
       ]
     },
@@ -1638,7 +1638,7 @@
       "inputs": [
         {
           "item": "Desc_LiquidOil_C",
-          "amount": 3000
+          "amount": 3
         }
       ],
       "outputs": [
@@ -1648,7 +1648,7 @@
         },
         {
           "item": "Desc_HeavyOilResidue_C",
-          "amount": 2000
+          "amount": 2
         }
       ]
     },
@@ -1663,13 +1663,13 @@
       "inputs": [
         {
           "item": "Desc_HeavyOilResidue_C",
-          "amount": 6000
+          "amount": 6
         }
       ],
       "outputs": [
         {
           "item": "Desc_LiquidFuel_C",
-          "amount": 4000
+          "amount": 4
         }
       ]
     },
@@ -1684,7 +1684,7 @@
       "inputs": [
         {
           "item": "Desc_HeavyOilResidue_C",
-          "amount": 4000
+          "amount": 4
         }
       ],
       "outputs": [
@@ -1709,7 +1709,7 @@
         },
         {
           "item": "Desc_Water_C",
-          "amount": 4000
+          "amount": 4
         }
       ],
       "outputs": [
@@ -1734,7 +1734,7 @@
         },
         {
           "item": "Desc_Water_C",
-          "amount": 2000
+          "amount": 2
         }
       ],
       "outputs": [
@@ -2055,11 +2055,11 @@
       "inputs": [
         {
           "item": "Desc_NitrogenGas_C",
-          "amount": 12000
+          "amount": 12
         },
         {
           "item": "Desc_Water_C",
-          "amount": 3000
+          "amount": 3
         },
         {
           "item": "Desc_IronPlate_C",
@@ -2069,7 +2069,7 @@
       "outputs": [
         {
           "item": "Desc_NitricAcid_C",
-          "amount": 3000
+          "amount": 3
         }
       ]
     },
@@ -2117,11 +2117,11 @@
         },
         {
           "item": "Desc_NitricAcid_C",
-          "amount": 6000
+          "amount": 6
         },
         {
           "item": "Desc_SulfuricAcid_C",
-          "amount": 6000
+          "amount": 6
         }
       ],
       "outputs": [
@@ -2131,7 +2131,7 @@
         },
         {
           "item": "Desc_Water_C",
-          "amount": 6000
+          "amount": 6
         }
       ]
     },
@@ -2192,7 +2192,7 @@
       "inputs": [
         {
           "item": "Desc_NitricAcid_C",
-          "amount": 1000
+          "amount": 1
         },
         {
           "item": "Desc_GasTank_C",
@@ -2223,7 +2223,7 @@
       "outputs": [
         {
           "item": "Desc_NitricAcid_C",
-          "amount": 1000
+          "amount": 1
         },
         {
           "item": "Desc_GasTank_C",
@@ -2563,7 +2563,7 @@
         },
         {
           "item": "Desc_Water_C",
-          "amount": 20000
+          "amount": 20
         }
       ],
       "outputs": [
@@ -2619,7 +2619,7 @@
       "outputs": [
         {
           "item": "Desc_NitrogenGas_C",
-          "amount": 12000
+          "amount": 12
         }
       ]
     },
@@ -2719,7 +2719,7 @@
       "outputs": [
         {
           "item": "Desc_NitrogenGas_C",
-          "amount": 12000
+          "amount": 12
         }
       ]
     },
@@ -2896,7 +2896,7 @@
         },
         {
           "item": "Desc_QuantumEnergy_C",
-          "amount": 12000
+          "amount": 12
         }
       ],
       "outputs": [
@@ -2906,7 +2906,7 @@
         },
         {
           "item": "Desc_DarkEnergy_C",
-          "amount": 12000
+          "amount": 12
         }
       ]
     },
@@ -2927,7 +2927,7 @@
       "outputs": [
         {
           "item": "Desc_DarkEnergy_C",
-          "amount": 10000
+          "amount": 10
         }
       ]
     },
@@ -2943,7 +2943,7 @@
       "outputs": [
         {
           "item": "Desc_QuantumEnergy_C",
-          "amount": 10000
+          "amount": 10
         }
       ]
     },
@@ -2962,7 +2962,7 @@
         },
         {
           "item": "Desc_DarkEnergy_C",
-          "amount": 5000
+          "amount": 5
         }
       ],
       "outputs": [
@@ -2995,7 +2995,7 @@
         },
         {
           "item": "Desc_QuantumEnergy_C",
-          "amount": 25000
+          "amount": 25
         }
       ],
       "outputs": [
@@ -3005,7 +3005,7 @@
         },
         {
           "item": "Desc_DarkEnergy_C",
-          "amount": 25000
+          "amount": 25
         }
       ]
     },
@@ -3032,7 +3032,7 @@
         },
         {
           "item": "Desc_QuantumEnergy_C",
-          "amount": 25000
+          "amount": 25
         }
       ],
       "outputs": [
@@ -3042,7 +3042,7 @@
         },
         {
           "item": "Desc_DarkEnergy_C",
-          "amount": 25000
+          "amount": 25
         }
       ]
     },
@@ -3069,7 +3069,7 @@
         },
         {
           "item": "Desc_QuantumEnergy_C",
-          "amount": 25000
+          "amount": 25
         }
       ],
       "outputs": [
@@ -3079,7 +3079,7 @@
         },
         {
           "item": "Desc_DarkEnergy_C",
-          "amount": 25000
+          "amount": 25
         }
       ]
     },
@@ -3094,7 +3094,7 @@
       "inputs": [
         {
           "item": "Desc_RocketFuel_C",
-          "amount": 2000
+          "amount": 2
         },
         {
           "item": "Desc_GasTank_C",
@@ -3125,7 +3125,7 @@
       "outputs": [
         {
           "item": "Desc_RocketFuel_C",
-          "amount": 2000
+          "amount": 2
         },
         {
           "item": "Desc_GasTank_C",
@@ -3144,17 +3144,17 @@
       "inputs": [
         {
           "item": "Desc_LiquidTurboFuel_C",
-          "amount": 6000
+          "amount": 6
         },
         {
           "item": "Desc_NitricAcid_C",
-          "amount": 1000
+          "amount": 1
         }
       ],
       "outputs": [
         {
           "item": "Desc_RocketFuel_C",
-          "amount": 10000
+          "amount": 10
         },
         {
           "item": "Desc_CompactedCoal_C",
@@ -3173,7 +3173,7 @@
       "inputs": [
         {
           "item": "Desc_RocketFuel_C",
-          "amount": 16000
+          "amount": 16
         },
         {
           "item": "Desc_CrystalShard_C",
@@ -3183,7 +3183,7 @@
       "outputs": [
         {
           "item": "Desc_IonizedFuel_C",
-          "amount": 16000
+          "amount": 16
         },
         {
           "item": "Desc_CompactedCoal_C",
@@ -3202,7 +3202,7 @@
       "inputs": [
         {
           "item": "Desc_IonizedFuel_C",
-          "amount": 4000
+          "amount": 4
         },
         {
           "item": "Desc_GasTank_C",
@@ -3233,7 +3233,7 @@
       "outputs": [
         {
           "item": "Desc_IonizedFuel_C",
-          "amount": 4000
+          "amount": 4
         },
         {
           "item": "Desc_GasTank_C",
@@ -3285,11 +3285,11 @@
         },
         {
           "item": "Desc_Water_C",
-          "amount": 5000
+          "amount": 5
         },
         {
           "item": "Desc_NitrogenGas_C",
-          "amount": 25000
+          "amount": 25
         }
       ],
       "outputs": [
@@ -3318,7 +3318,7 @@
         },
         {
           "item": "Desc_NitrogenGas_C",
-          "amount": 25000
+          "amount": 25
         }
       ],
       "outputs": [
@@ -3360,7 +3360,7 @@
       "inputs": [
         {
           "item": "Desc_NitrogenGas_C",
-          "amount": 4000
+          "amount": 4
         },
         {
           "item": "Desc_GasTank_C",
@@ -3391,7 +3391,7 @@
       "outputs": [
         {
           "item": "Desc_NitrogenGas_C",
-          "amount": 4000
+          "amount": 4
         },
         {
           "item": "Desc_GasTank_C",
@@ -3468,7 +3468,7 @@
         },
         {
           "item": "Desc_SulfuricAcid_C",
-          "amount": 8000
+          "amount": 8
         }
       ],
       "outputs": [
@@ -3478,7 +3478,7 @@
         },
         {
           "item": "Desc_SulfuricAcid_C",
-          "amount": 2000
+          "amount": 2
         }
       ]
     },
@@ -3696,13 +3696,13 @@
         },
         {
           "item": "Desc_Water_C",
-          "amount": 18000
+          "amount": 18
         }
       ],
       "outputs": [
         {
           "item": "Desc_AluminaSolution_C",
-          "amount": 12000
+          "amount": 12
         },
         {
           "item": "Desc_Silica_C",
@@ -3721,7 +3721,7 @@
       "inputs": [
         {
           "item": "Desc_AluminaSolution_C",
-          "amount": 4000
+          "amount": 4
         },
         {
           "item": "Desc_Coal_C",
@@ -3735,7 +3735,7 @@
         },
         {
           "item": "Desc_Water_C",
-          "amount": 2000
+          "amount": 2
         }
       ]
     },
@@ -3750,7 +3750,7 @@
       "inputs": [
         {
           "item": "Desc_AluminaSolution_C",
-          "amount": 2000
+          "amount": 2
         },
         {
           "item": "Desc_FluidCanister_C",
@@ -3781,7 +3781,7 @@
       "outputs": [
         {
           "item": "Desc_AluminaSolution_C",
-          "amount": 2000
+          "amount": 2
         },
         {
           "item": "Desc_FluidCanister_C",
@@ -3850,7 +3850,7 @@
       "inputs": [
         {
           "item": "Desc_LiquidFuel_C",
-          "amount": 2000
+          "amount": 2
         },
         {
           "item": "Desc_FluidCanister_C",
@@ -3875,7 +3875,7 @@
       "inputs": [
         {
           "item": "Desc_LiquidFuel_C",
-          "amount": 6000
+          "amount": 6
         },
         {
           "item": "Desc_CompactedCoal_C",
@@ -3885,7 +3885,7 @@
       "outputs": [
         {
           "item": "Desc_LiquidTurboFuel_C",
-          "amount": 5000
+          "amount": 5
         }
       ]
     },
@@ -3900,7 +3900,7 @@
       "inputs": [
         {
           "item": "Desc_LiquidTurboFuel_C",
-          "amount": 2000
+          "amount": 2
         },
         {
           "item": "Desc_FluidCanister_C",
@@ -3931,7 +3931,7 @@
       "outputs": [
         {
           "item": "Desc_LiquidFuel_C",
-          "amount": 2000
+          "amount": 2
         },
         {
           "item": "Desc_FluidCanister_C",
@@ -3956,7 +3956,7 @@
       "outputs": [
         {
           "item": "Desc_LiquidTurboFuel_C",
-          "amount": 2000
+          "amount": 2
         },
         {
           "item": "Desc_FluidCanister_C",
@@ -3979,13 +3979,13 @@
         },
         {
           "item": "Desc_Water_C",
-          "amount": 3000
+          "amount": 3
         }
       ],
       "outputs": [
         {
           "item": "Desc_LiquidBiofuel_C",
-          "amount": 4000
+          "amount": 4
         }
       ]
     },
@@ -4000,7 +4000,7 @@
       "inputs": [
         {
           "item": "Desc_LiquidBiofuel_C",
-          "amount": 2000
+          "amount": 2
         },
         {
           "item": "Desc_FluidCanister_C",
@@ -4031,7 +4031,7 @@
       "outputs": [
         {
           "item": "Desc_LiquidBiofuel_C",
-          "amount": 2000
+          "amount": 2
         },
         {
           "item": "Desc_FluidCanister_C",
@@ -4050,7 +4050,7 @@
       "inputs": [
         {
           "item": "Desc_LiquidOil_C",
-          "amount": 2000
+          "amount": 2
         },
         {
           "item": "Desc_FluidCanister_C",
@@ -4081,7 +4081,7 @@
       "outputs": [
         {
           "item": "Desc_LiquidOil_C",
-          "amount": 2000
+          "amount": 2
         },
         {
           "item": "Desc_FluidCanister_C",
@@ -4100,7 +4100,7 @@
       "inputs": [
         {
           "item": "Desc_HeavyOilResidue_C",
-          "amount": 2000
+          "amount": 2
         },
         {
           "item": "Desc_FluidCanister_C",
@@ -4131,7 +4131,7 @@
       "outputs": [
         {
           "item": "Desc_HeavyOilResidue_C",
-          "amount": 2000
+          "amount": 2
         },
         {
           "item": "Desc_FluidCanister_C",
@@ -4150,7 +4150,7 @@
       "inputs": [
         {
           "item": "Desc_Water_C",
-          "amount": 2000
+          "amount": 2
         },
         {
           "item": "Desc_FluidCanister_C",
@@ -4181,7 +4181,7 @@
       "outputs": [
         {
           "item": "Desc_Water_C",
-          "amount": 2000
+          "amount": 2
         },
         {
           "item": "Desc_FluidCanister_C",
@@ -4395,7 +4395,7 @@
         },
         {
           "item": "Desc_HeavyOilResidue_C",
-          "amount": 1000
+          "amount": 1
         }
       ],
       "outputs": [
@@ -4645,7 +4645,7 @@
         },
         {
           "item": "Desc_LiquidTurboFuel_C",
-          "amount": 3000
+          "amount": 3
         }
       ],
       "outputs": [
@@ -5329,7 +5329,7 @@
         },
         {
           "item": "Desc_Water_C",
-          "amount": 1000
+          "amount": 1
         }
       ],
       "outputs": [
@@ -5404,7 +5404,7 @@
         },
         {
           "item": "Desc_QuantumEnergy_C",
-          "amount": 24000
+          "amount": 24
         }
       ],
       "outputs": [
@@ -5414,7 +5414,7 @@
         },
         {
           "item": "Desc_DarkEnergy_C",
-          "amount": 24000
+          "amount": 24
         }
       ]
     },
@@ -5563,7 +5563,7 @@
         },
         {
           "item": "Desc_DarkEnergy_C",
-          "amount": 20000
+          "amount": 20
         }
       ],
       "outputs": [
@@ -5596,7 +5596,7 @@
         },
         {
           "item": "Desc_QuantumEnergy_C",
-          "amount": 20000
+          "amount": 20
         }
       ],
       "outputs": [
@@ -5606,7 +5606,7 @@
         },
         {
           "item": "Desc_DarkEnergy_C",
-          "amount": 20000
+          "amount": 20
         }
       ]
     },
@@ -5687,11 +5687,11 @@
       "inputs": [
         {
           "item": "Desc_SulfuricAcid_C",
-          "amount": 2500
+          "amount": 2.5
         },
         {
           "item": "Desc_AluminaSolution_C",
-          "amount": 2000
+          "amount": 2
         },
         {
           "item": "Desc_AluminumCasing_C",
@@ -5705,7 +5705,7 @@
         },
         {
           "item": "Desc_Water_C",
-          "amount": 1500
+          "amount": 1.5
         }
       ]
     },
@@ -5724,13 +5724,13 @@
         },
         {
           "item": "Desc_Water_C",
-          "amount": 5000
+          "amount": 5
         }
       ],
       "outputs": [
         {
           "item": "Desc_SulfuricAcid_C",
-          "amount": 5000
+          "amount": 5
         }
       ]
     },
@@ -5770,7 +5770,7 @@
       "inputs": [
         {
           "item": "Desc_SulfuricAcid_C",
-          "amount": 2000
+          "amount": 2
         },
         {
           "item": "Desc_FluidCanister_C",
@@ -5801,7 +5801,7 @@
       "outputs": [
         {
           "item": "Desc_SulfuricAcid_C",
-          "amount": 1000
+          "amount": 1
         },
         {
           "item": "Desc_FluidCanister_C",
@@ -6178,7 +6178,7 @@
         },
         {
           "item": "Desc_LiquidFuel_C",
-          "amount": 6000
+          "amount": 6
         }
       ],
       "outputs": [
@@ -6706,7 +6706,7 @@
       "inputs": [
         {
           "item": "Desc_DissolvedSilica_C",
-          "amount": 12000
+          "amount": 12
         },
         {
           "item": "Desc_Stone_C",
@@ -6714,7 +6714,7 @@
         },
         {
           "item": "Desc_Water_C",
-          "amount": 10000
+          "amount": 10
         }
       ],
       "outputs": [
@@ -6724,7 +6724,7 @@
         },
         {
           "item": "Desc_Water_C",
-          "amount": 8000
+          "amount": 8
         }
       ]
     },
@@ -6743,7 +6743,7 @@
         },
         {
           "item": "Desc_NitricAcid_C",
-          "amount": 2000
+          "amount": 2
         }
       ],
       "outputs": [
@@ -6753,7 +6753,7 @@
         },
         {
           "item": "Desc_DissolvedSilica_C",
-          "amount": 12000
+          "amount": 12
         }
       ]
     },
@@ -6797,7 +6797,7 @@
         },
         {
           "item": "Desc_SulfuricAcid_C",
-          "amount": 1000
+          "amount": 1
         }
       ],
       "outputs": [
@@ -6872,7 +6872,7 @@
         },
         {
           "item": "Desc_SulfuricAcid_C",
-          "amount": 5000
+          "amount": 5
         }
       ],
       "outputs": [
@@ -6922,7 +6922,7 @@
         },
         {
           "item": "Desc_SulfuricAcid_C",
-          "amount": 5000
+          "amount": 5
         }
       ],
       "outputs": [
@@ -7139,11 +7139,11 @@
       "inputs": [
         {
           "item": "Desc_LiquidFuel_C",
-          "amount": 2000
+          "amount": 2
         },
         {
           "item": "Desc_HeavyOilResidue_C",
-          "amount": 4000
+          "amount": 4
         },
         {
           "item": "Desc_Sulfur_C",
@@ -7157,7 +7157,7 @@
       "outputs": [
         {
           "item": "Desc_LiquidTurboFuel_C",
-          "amount": 6000
+          "amount": 6
         }
       ]
     },
@@ -7209,13 +7209,13 @@
         },
         {
           "item": "Desc_Water_C",
-          "amount": 10000
+          "amount": 10
         }
       ],
       "outputs": [
         {
           "item": "Desc_AluminaSolution_C",
-          "amount": 12000
+          "amount": 12
         }
       ]
     },
@@ -7321,11 +7321,11 @@
         },
         {
           "item": "Desc_SulfuricAcid_C",
-          "amount": 5000
+          "amount": 5
         },
         {
           "item": "Desc_Water_C",
-          "amount": 6000
+          "amount": 6
         }
       ],
       "outputs": [
@@ -7335,7 +7335,7 @@
         },
         {
           "item": "Desc_Water_C",
-          "amount": 5000
+          "amount": 5
         }
       ]
     },
@@ -7383,11 +7383,11 @@
         },
         {
           "item": "Desc_NitricAcid_C",
-          "amount": 8000
+          "amount": 8
         },
         {
           "item": "Desc_LiquidFuel_C",
-          "amount": 10000
+          "amount": 10
         }
       ],
       "outputs": [
@@ -7416,11 +7416,11 @@
         },
         {
           "item": "Desc_NitricAcid_C",
-          "amount": 3000
+          "amount": 3
         },
         {
           "item": "Desc_SulfuricAcid_C",
-          "amount": 5000
+          "amount": 5
         }
       ],
       "outputs": [
@@ -7430,7 +7430,7 @@
         },
         {
           "item": "Desc_Water_C",
-          "amount": 8000
+          "amount": 8
         }
       ]
     },
@@ -7470,17 +7470,17 @@
       "inputs": [
         {
           "item": "Desc_HeavyOilResidue_C",
-          "amount": 5000
+          "amount": 5
         },
         {
           "item": "Desc_Water_C",
-          "amount": 10000
+          "amount": 10
         }
       ],
       "outputs": [
         {
           "item": "Desc_LiquidFuel_C",
-          "amount": 10000
+          "amount": 10
         }
       ]
     },
@@ -7503,7 +7503,7 @@
         },
         {
           "item": "Desc_NitrogenGas_C",
-          "amount": 24000
+          "amount": 24
         }
       ],
       "outputs": [
@@ -7586,7 +7586,7 @@
         },
         {
           "item": "Desc_Water_C",
-          "amount": 5000
+          "amount": 5
         }
       ],
       "outputs": [
@@ -7607,7 +7607,7 @@
       "inputs": [
         {
           "item": "Desc_HeavyOilResidue_C",
-          "amount": 5000
+          "amount": 5
         },
         {
           "item": "Desc_CompactedCoal_C",
@@ -7617,7 +7617,7 @@
       "outputs": [
         {
           "item": "Desc_LiquidTurboFuel_C",
-          "amount": 4000
+          "amount": 4
         }
       ]
     },
@@ -7678,7 +7678,7 @@
         },
         {
           "item": "Desc_Water_C",
-          "amount": 3000
+          "amount": 3
         }
       ],
       "outputs": [
@@ -7728,7 +7728,7 @@
         },
         {
           "item": "Desc_LiquidFuel_C",
-          "amount": 6000
+          "amount": 6
         }
       ],
       "outputs": [
@@ -7753,7 +7753,7 @@
         },
         {
           "item": "Desc_Water_C",
-          "amount": 5000
+          "amount": 5
         }
       ],
       "outputs": [
@@ -7778,7 +7778,7 @@
         },
         {
           "item": "Desc_Water_C",
-          "amount": 4000
+          "amount": 4
         }
       ],
       "outputs": [
@@ -7803,7 +7803,7 @@
         },
         {
           "item": "Desc_Water_C",
-          "amount": 4000
+          "amount": 4
         }
       ],
       "outputs": [
@@ -7828,7 +7828,7 @@
         },
         {
           "item": "Desc_Water_C",
-          "amount": 2000
+          "amount": 2
         }
       ],
       "outputs": [
@@ -7870,7 +7870,7 @@
       "inputs": [
         {
           "item": "Desc_LiquidOil_C",
-          "amount": 6000
+          "amount": 6
         }
       ],
       "outputs": [
@@ -7880,7 +7880,7 @@
         },
         {
           "item": "Desc_HeavyOilResidue_C",
-          "amount": 2000
+          "amount": 2
         }
       ]
     },
@@ -7953,13 +7953,13 @@
       "inputs": [
         {
           "item": "Desc_LiquidOil_C",
-          "amount": 3000
+          "amount": 3
         }
       ],
       "outputs": [
         {
           "item": "Desc_HeavyOilResidue_C",
-          "amount": 4000
+          "amount": 4
         },
         {
           "item": "Desc_PolymerResin_C",
@@ -8090,7 +8090,7 @@
       "inputs": [
         {
           "item": "Desc_AluminaSolution_C",
-          "amount": 12000
+          "amount": 12
         },
         {
           "item": "Desc_PetroleumCoke_C",
@@ -8104,7 +8104,7 @@
         },
         {
           "item": "Desc_Water_C",
-          "amount": 7000
+          "amount": 7
         }
       ]
     },
@@ -8119,7 +8119,7 @@
       "inputs": [
         {
           "item": "Desc_HeavyOilResidue_C",
-          "amount": 1000
+          "amount": 1
         },
         {
           "item": "Desc_PackagedWater_C",
@@ -8273,7 +8273,7 @@
         },
         {
           "item": "Desc_HeavyOilResidue_C",
-          "amount": 2000
+          "amount": 2
         }
       ],
       "outputs": [
@@ -8344,11 +8344,11 @@
       "inputs": [
         {
           "item": "Desc_LiquidFuel_C",
-          "amount": 4000
+          "amount": 4
         },
         {
           "item": "Desc_NitrogenGas_C",
-          "amount": 3000
+          "amount": 3
         },
         {
           "item": "Desc_Sulfur_C",
@@ -8362,7 +8362,7 @@
       "outputs": [
         {
           "item": "Desc_RocketFuel_C",
-          "amount": 6000
+          "amount": 6
         },
         {
           "item": "Desc_CompactedCoal_C",
@@ -8391,7 +8391,7 @@
       "outputs": [
         {
           "item": "Desc_IonizedFuel_C",
-          "amount": 10000
+          "amount": 10
         },
         {
           "item": "Desc_CompactedCoal_C",
@@ -8481,7 +8481,7 @@
       "inputs": [
         {
           "item": "Desc_LiquidOil_C",
-          "amount": 10000
+          "amount": 10
         }
       ],
       "outputs": [
@@ -8531,7 +8531,7 @@
         },
         {
           "item": "Desc_DarkEnergy_C",
-          "amount": 5000
+          "amount": 5
         }
       ],
       "outputs": [
@@ -8552,7 +8552,7 @@
       "inputs": [
         {
           "item": "Desc_DarkEnergy_C",
-          "amount": 10000
+          "amount": 10
         }
       ],
       "outputs": [

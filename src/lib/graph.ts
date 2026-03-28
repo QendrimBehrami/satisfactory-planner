@@ -1,29 +1,22 @@
-import { type Node, type Edge, MarkerType } from '@xyflow/svelte'
-import type { ProductionNode } from './types'
+import { type Node, type Edge, MarkerType, Position } from '@xyflow/svelte'
+import type { GraphOptions, ProductionNode } from './types'
+import dagre from 'dagre'
 
-const NODE_WIDTH = 180
-const NODE_HEIGHT = 240
-const H_GAP = 120
-const V_GAP = 40
+const NODE_WIDTH = 240
+const NODE_HEIGHT = 120
 
-function countLeaves(node: ProductionNode): number {
-    if (node.inputs.length === 0) return 1
-    return node.inputs.reduce((sum, input) => sum + countLeaves(input), 0)
-}
-
-function buildGraph(
+function buildNodesAndEdges(
     node: ProductionNode,
     nodes: Node[],
     edges: Edge[],
-    x: number,
-    y: number,
-    parentId: string | null
+    parentId: string | null,
+    options?: GraphOptions
 ): void {
     const id = `${node.itemId}-${nodes.length}`
 
     nodes.push({
         id,
-        position: { x, y },
+        position: { x: 0, y: 0 },
         data: {
             label: node.itemName,
             rate: node.rate,
@@ -36,6 +29,7 @@ function buildGraph(
                 name: input.itemName,
                 rate: input.rate,
             })),
+            horizontalLayout: options?.horizontalLayout ?? false,
         },
         type: 'production',
     })
@@ -47,27 +41,46 @@ function buildGraph(
             target: parentId,
             type: 'smoothstep',
             markerEnd: { type: MarkerType.Arrow, width: 20, height: 20 },
+            animated: options?.animatedEdges ?? false,
         })
     }
 
-    if (node.inputs.length === 0) return
-
-    const totalLeaves = countLeaves(node)
-    const totalWidth = totalLeaves * NODE_WIDTH + (totalLeaves - 1) * H_GAP
-    let offsetX = x - totalWidth / 2 + NODE_WIDTH / 2
-
     for (const input of node.inputs) {
-        const leaves = countLeaves(input)
-        const childWidth = leaves * NODE_WIDTH + (leaves - 1) * H_GAP
-        const childX = offsetX + childWidth / 2 - NODE_WIDTH / 2
-        buildGraph(input, nodes, edges, childX, y + NODE_HEIGHT + V_GAP, id)
-        offsetX += childWidth + H_GAP
+        buildNodesAndEdges(input, nodes, edges, id, options)
     }
 }
 
-export function treeToGraph(tree: ProductionNode): { nodes: Node[]; edges: Edge[] } {
+export function treeToGraph(tree: ProductionNode, options?: GraphOptions): { nodes: Node[], edges: Edge[] } {
     const nodes: Node[] = []
     const edges: Edge[] = []
-    buildGraph(tree, nodes, edges, 0, 0, null)
+
+    buildNodesAndEdges(tree, nodes, edges, null, options)
+
+    const horizontal = options?.horizontalLayout ?? false
+    const direction = horizontal ? 'LR' : 'BT'
+
+    const g = new dagre.graphlib.Graph()
+    g.setDefaultEdgeLabel(() => ({}))
+    g.setGraph({ rankdir: direction, nodesep: 40, ranksep: 80 })
+
+    for (const node of nodes) {
+        g.setNode(node.id, { width: NODE_WIDTH, height: NODE_HEIGHT })
+    }
+    for (const edge of edges) {
+        g.setEdge(edge.source, edge.target)
+    }
+
+    dagre.layout(g)
+
+    for (const node of nodes) {
+        const dagreNode = g.node(node.id)
+        node.position = {
+            x: dagreNode.x - NODE_WIDTH / 2,
+            y: dagreNode.y - NODE_HEIGHT / 2,
+        }
+        node.sourcePosition = horizontal ? Position.Right : Position.Top
+        node.targetPosition = horizontal ? Position.Left : Position.Bottom
+    }
+
     return { nodes, edges }
 }
