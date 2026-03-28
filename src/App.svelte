@@ -20,7 +20,7 @@
     {edges}
     {nodeTypes}
     fitView
-    fitViewOptions={{ padding: 0.5 }}
+    fitViewOptions={{ padding: 0.2 }}
   >
     <Background />
   </SvelteFlow>

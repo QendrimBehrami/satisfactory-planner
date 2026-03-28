@@ -4,16 +4,25 @@
     let { data } = $props();
 </script>
 
-<Handle type="target" position={Position.Top} />
+{#if data.hasParent}
+    <Handle type="target" position={Position.Top} />
+{/if}
 
 <div class="node" class:resource={data.isResource}>
+    {#if !data.isResource}
+        <p class="stat">{data.buildingName}</p>
+    {/if}
     <p class="name">{data.label}</p>
     <p class="stat">{data.rate.toFixed(1)}/min</p>
-    <p class="stat">{data.machines.toFixed(2)} machines</p>
-    <p class="stat">{data.power.toFixed(1)} MW</p>
+    {#if !data.isResource}
+        <p class="stat">{data.machines.toFixed(2)} machines</p>
+        <p class="stat">{data.power.toFixed(1)} MW</p>
+    {/if}
 </div>
 
-<Handle type="source" position={Position.Bottom} />
+{#if !data.isResource}
+    <Handle type="source" position={Position.Bottom} />
+{/if}
 
 <style>
     .node {

@@ -22,6 +22,7 @@ export interface ProductionNode {
     itemName: string
     rate: number       // items/min
     recipe: Recipe | null
+    buildingName: string
     machines: number
     power: number      // MW
     inputs: ProductionNode[]
@@ -55,6 +56,7 @@ export function calculate(itemId: string, rate: number, visited = new Set<string
             itemName: item?.name ?? itemId,
             rate,
             recipe: null,
+            buildingName: gameData.buildings[recipe?.buildings[0] ?? ""]?.name ?? "",
             machines: 0,
             power: 0,
             inputs: [],
@@ -80,6 +82,7 @@ export function calculate(itemId: string, rate: number, visited = new Set<string
         itemName: item?.name ?? itemId,
         rate,
         recipe,
+        buildingName: gameData.buildings[recipe?.buildings[0] ?? ""]?.name ?? "",
         machines,
         power,
         inputs,
