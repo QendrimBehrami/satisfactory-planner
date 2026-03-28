@@ -28,6 +28,7 @@
         <img
             src={getIconPath(data.label)}
             alt={data.label}
+            loading="lazy"
             class="icon"
             onerror={(e) => (e.currentTarget.style.display = "none")}
         />

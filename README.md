@@ -41,4 +41,19 @@ npm run deploy
 
 ## Credits
 
-Game assets and item icons are property of Coffee Stain Studios.
+<p>
+Game assets and item icons are property of
+<strong class="text-foreground">Coffee Stain Studios</strong>.
+This is an unofficial community tool, not affiliated with Coffee Stain Studios.
+</p>
+<p>
+    Node graph powered by <a
+        href="https://svelteflow.dev"
+        target="_blank"
+        class="underline">Svelte Flow</a
+    >
+    by the
+    <a href="https://xyflow.com" target="_blank" class="underline"
+        >xyflow</a
+    > team.
+</p>

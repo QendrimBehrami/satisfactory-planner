@@ -4,6 +4,7 @@
   import { calculate } from "./lib/calculator";
   import { treeToGraph } from "./lib/graph";
   import ProductionNode from "./components/ProductionNode.svelte";
+  import WelcomeModal from "./components/WelcomeModal.svelte";
   import {
     Provider,
     Root,
@@ -35,6 +36,8 @@
       : { nodes: [], edges: [] },
   );
 </script>
+
+<WelcomeModal />
 
 <Provider class="" style="">
   <Root class="" style="">
@@ -89,6 +92,7 @@
         {nodeTypes}
         fitView
         fitViewOptions={{ padding: 0.1 }}
+        proOptions={{ hideAttribution: true }}
       >
         <Background />
       </SvelteFlow>

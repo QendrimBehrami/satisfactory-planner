@@ -1,10 +1,18 @@
 @import "tailwindcss";
 @import "tw-animate-css";
-@import "@fontsource-variable/jetbrains-mono";
+
+
+@font-face {
+  font-family: 'Inter';
+  src: url('/fonts/InterVariable.ttf') format('truetype');
+  font-weight: 100 900;
+  font-display: swap;
+}
 
 @custom-variant dark (&:is(.dark *));
 
 :root {
+  --font-sans: 'Inter', sans-serif;
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
@@ -74,7 +82,7 @@
 }
 
 @theme inline {
-  --font-mono: 'Inter', 'JetBrains Mono Variable', monospace;
+  /* --font-mono: 'Inter', monospace; */
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -135,8 +143,10 @@
   &:where([data-open]:not([data-open="false"])) {
     @slot;
   }
-	&:where([data-state="open"]), &:where([data-open]:not([data-open="false"])) {
-		@slot;
+
+  &:where([data-state="open"]),
+  &:where([data-open]:not([data-open="false"])) {
+    @slot;
   }
 }
 
@@ -146,8 +156,10 @@
   &:where([data-closed]:not([data-closed="false"])) {
     @slot;
   }
-	&:where([data-state="closed"]), &:where([data-closed]:not([data-closed="false"])) {
-		@slot;
+
+  &:where([data-state="closed"]),
+  &:where([data-closed]:not([data-closed="false"])) {
+    @slot;
   }
 }
 
@@ -157,8 +169,10 @@
   &:where([data-checked]:not([data-checked="false"])) {
     @slot;
   }
-	&:where([data-state="checked"]), &:where([data-checked]:not([data-checked="false"])) {
-		@slot;
+
+  &:where([data-state="checked"]),
+  &:where([data-checked]:not([data-checked="false"])) {
+    @slot;
   }
 }
 
@@ -168,8 +182,10 @@
   &:where([data-unchecked]:not([data-unchecked="false"])) {
     @slot;
   }
-	&:where([data-state="unchecked"]), &:where([data-unchecked]:not([data-unchecked="false"])) {
-		@slot;
+
+  &:where([data-state="unchecked"]),
+  &:where([data-unchecked]:not([data-unchecked="false"])) {
+    @slot;
   }
 }
 
@@ -185,8 +201,10 @@
   &:where([data-disabled]:not([data-disabled="false"])) {
     @slot;
   }
-	&:where([data-disabled="true"]), &:where([data-disabled]:not([data-disabled="false"])) {
-		@slot;
+
+  &:where([data-disabled="true"]),
+  &:where([data-disabled]:not([data-disabled="false"])) {
+    @slot;
   }
 }
 
@@ -196,8 +214,10 @@
   &:where([data-active]:not([data-active="false"])) {
     @slot;
   }
-	&:where([data-state="active"]), &:where([data-active]:not([data-active="false"])) {
-		@slot;
+
+  &:where([data-state="active"]),
+  &:where([data-active]:not([data-active="false"])) {
+    @slot;
   }
 }
 
@@ -214,10 +234,10 @@
 }
 
 @utility no-scrollbar {
-	-ms-overflow-style: none;
-	scrollbar-width: none;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 
   &::-webkit-scrollbar {
-  	display: none;
+    display: none;
   }
 }
