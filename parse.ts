@@ -1,4 +1,5 @@
 import { readFileSync, writeFileSync } from "fs";
+import type { Item, Building, RecipeItem, Recipe, GameData } from './src/lib/types'
 import { join } from "path";
 
 const INPUT_FILE = join(process.cwd(), "en-US.json");
@@ -23,41 +24,6 @@ interface RawClass {
 interface RawEntry {
     NativeClass: string;
     Classes: RawClass[];
-}
-
-export interface Item {
-    id: string;
-    name: string;
-    form: "solid" | "liquid" | "gas";
-    sinkPoints: number;
-}
-
-export interface Building {
-    id: string;
-    name: string;
-    power: number;
-    powerExponent: number;
-}
-
-export interface RecipeItem {
-    item: string;
-    amount: number;
-}
-
-export interface Recipe {
-    id: string;
-    name: string;
-    alternate: boolean;
-    time: number;
-    buildings: string[];
-    inputs: RecipeItem[];
-    outputs: RecipeItem[];
-}
-
-export interface GameData {
-    items: Record<string, Item>;
-    buildings: Record<string, Building>;
-    recipes: Recipe[];
 }
 
 // ── Helpers ────────────────────────────────────────────────────────────────
@@ -104,6 +70,7 @@ for (const entry of data) {
                 id: cls.ClassName,
                 name: cls.mDisplayName,
                 form,
+                isResource: entry.NativeClass.includes("FGResourceDescriptor"),
                 sinkPoints: parseInt(cls.mResourceSinkPoints ?? "0", 10),
             };
         }

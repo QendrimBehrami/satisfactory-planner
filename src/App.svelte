@@ -1,4 +1,6 @@
 <script lang="ts">
-</script>
+  import { calculate } from "./lib/calculator";
 
-<h1 class="text-4xl font-bold text-red-500">Hello</h1>
+  const result = calculate("Desc_Motor_C", 10);
+  console.log(JSON.stringify(result, null, 2));
+</script>
