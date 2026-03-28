@@ -28,5 +28,5 @@ export const itemOptions = Object.values(items)
     .sort((a, b) => a.label.localeCompare(b.label))
 
 export function getIconPath(itemName: string): string {
-    return `/icons/${itemName.replace(/ /g, '_')}.webp`
+    return `${import.meta.env.BASE_URL}icons/${itemName.replace(/ /g, '_')}.webp`
 }

@@ -1,6 +1,10 @@
 # satisfactory-planner
 
-A production chain calculator for Satisfactory 1.0.
+A production chain calculator for Satisfactory 1.0. Plan your factories with an interactive node graph.
+
+## Live Demo
+
+https://qendrimbehrami.github.io/satisfactory-planner/
 
 ## Setup
 ```bash
@@ -8,18 +12,33 @@ npm install
 npm run dev
 ```
 
-## Data
+## Updating Recipe Data
 
 Recipes are parsed from Satisfactory's `en-US.json` file located at:
 `Steam/steamapps/common/Satisfactory/CommunityResources/Docs/en-US.json`
 
-To update recipe data after a game update, copy `en-US.json` into the project root and run:
+Copy `en-US.json` into the project root and run:
 ```bash
-node parse.js
+npm run parse
+```
+
+To fetch item icons from the Satisfactory Wiki:
+```bash
+npm run fetch-icons
+npm run convert-icons # Converts png files to webp
+```
+
+## Deploy to GitHub Pages
+```bash
+npm run deploy
 ```
 
 ## Stack
 
-- Vite + Svelte
-- Tailwind CSS
-- Svelte Flow
+- Vite + Svelte + TypeScript
+- Tailwind CSS + shadcn-svelte
+- Svelte Flow + Dagre
+
+## Credits
+
+Game assets and item icons are property of Coffee Stain Studios.
