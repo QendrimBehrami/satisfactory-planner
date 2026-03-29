@@ -22,3 +22,21 @@ export const recipeOverrides = writable<Record<string, string>>(
 recipeOverrides.subscribe(value => {
     localStorage.setItem('recipeOverrides', JSON.stringify(value))
 })
+
+const storedDone = localStorage.getItem('doneNodes')
+export const doneNodes = writable<Record<string, boolean>>(
+    storedDone ? JSON.parse(storedDone) : {}
+)
+
+doneNodes.subscribe(value => {
+    localStorage.setItem('doneNodes', JSON.stringify(value))
+})
+
+const storedCollapsed = localStorage.getItem('collapsedNodes')
+export const collapsedNodes = writable<Record<string, boolean>>(
+    storedCollapsed ? JSON.parse(storedCollapsed) : {}
+)
+
+collapsedNodes.subscribe(value => {
+    localStorage.setItem('collapsedNodes', JSON.stringify(value))
+})

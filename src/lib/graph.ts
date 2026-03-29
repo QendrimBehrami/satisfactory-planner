@@ -4,17 +4,38 @@ import { recipesByOutput } from './data'
 import dagre from 'dagre'
 
 const NODE_WIDTH = 240
-const NODE_HEIGHT = 120
+
+// Estimates based on CSS: header=48px, recipe-select=30px, section-label+padding=28px, each input row=20px
+function estimateNodeHeight(data: Record<string, unknown>): number {
+    if (data.isResource || data.isOutput) return 50
+    const inputs = (data.inputs as unknown[])?.length ?? 0
+    const hasRecipeSelect = (data.availableRecipes as unknown[])?.length > 1
+    return 48 + (hasRecipeSelect ? 30 : 0) + (inputs > 0 ? 28 + inputs * 20 : 0)
+}
+
+interface GraphCallbacks {
+    onRecipeChange?: (itemId: string, recipeId: string) => void
+    onToggleDone?: (itemId: string) => void
+    onToggleCollapse?: (itemId: string) => void
+}
+
+interface GraphState {
+    doneNodes: Record<string, boolean>
+    collapsedNodes: Record<string, boolean>
+}
 
 function buildNodesAndEdges(
     node: ProductionNode,
     nodes: Node[],
     edges: Edge[],
     parentId: string | null,
-    options?: GraphOptions,
-    onRecipeChange?: (itemId: string, recipeId: string) => void
+    options: GraphOptions,
+    callbacks: GraphCallbacks,
+    state: GraphState,
 ): void {
     const id = `${node.itemId}-${nodes.length}`
+    const isCollapsed = state.collapsedNodes[node.itemId] ?? false
+    const isDone = state.doneNodes[node.itemId] ?? false
 
     nodes.push({
         id,
@@ -31,11 +52,14 @@ function buildNodesAndEdges(
                 name: input.itemName,
                 rate: input.rate,
             })),
-            horizontalLayout: options?.horizontalLayout ?? false,
+            horizontalLayout: options.horizontalLayout ?? false,
             itemId: node.itemId,
             recipeId: node.recipe?.id ?? null,
             availableRecipes: (recipesByOutput[node.itemId] ?? []).map(r => ({ value: r.id, label: r.name })),
-            onRecipeChange,
+            isDone,
+            isCollapsed,
+            hiddenInputCount: isCollapsed ? node.inputs.length : 0,
+            ...callbacks,
         },
         type: 'production',
     })
@@ -47,7 +71,7 @@ function buildNodesAndEdges(
             target: parentId,
             type: 'smoothstep',
             markerEnd: { type: MarkerType.Arrow, width: 20, height: 20 },
-            animated: options?.animatedEdges ?? false,
+            animated: options.animatedEdges ?? false,
         })
     }
 
@@ -66,7 +90,7 @@ function buildNodesAndEdges(
                 hasParent: false,
                 inputs: [],
                 availableRecipes: [],
-                horizontalLayout: options?.horizontalLayout ?? false,
+                horizontalLayout: options.horizontalLayout ?? false,
             },
             type: 'production',
         })
@@ -76,12 +100,14 @@ function buildNodesAndEdges(
             target: bpId,
             type: 'smoothstep',
             markerEnd: { type: MarkerType.Arrow, width: 20, height: 20 },
-            animated: options?.animatedEdges ?? false,
+            animated: options.animatedEdges ?? false,
         })
     }
 
-    for (const input of node.inputs) {
-        buildNodesAndEdges(input, nodes, edges, id, options, onRecipeChange)
+    if (!isCollapsed) {
+        for (const input of node.inputs) {
+            buildNodesAndEdges(input, nodes, edges, id, options, callbacks, state)
+        }
     }
 }
 
@@ -150,7 +176,12 @@ function mergeInputs(a: { name: string; rate: number }[] | undefined, b: { name:
     return Array.from(map.entries()).map(([name, rate]) => ({ name, rate }))
 }
 
-export function treeToGraph(tree: ProductionNode, options?: GraphOptions, onRecipeChange?: (itemId: string, recipeId: string) => void): { nodes: Node[], edges: Edge[] } {
+export function treeToGraph(
+    tree: ProductionNode,
+    options: GraphOptions = {},
+    callbacks: GraphCallbacks = {},
+    state: GraphState = { doneNodes: {}, collapsedNodes: {} },
+): { nodes: Node[], edges: Edge[] } {
     let nodes: Node[] = []
     let edges: Edge[] = []
 
@@ -162,7 +193,7 @@ export function treeToGraph(tree: ProductionNode, options?: GraphOptions, onReci
         data: {
             label: tree.itemName,
             rate: tree.rate,
-            horizontalLayout: options?.horizontalLayout ?? false,
+            horizontalLayout: options.horizontalLayout ?? false,
             itemId: tree.itemId,
             isOutput: true,
             hasParent: false,
@@ -172,7 +203,7 @@ export function treeToGraph(tree: ProductionNode, options?: GraphOptions, onReci
         type: 'production',
     })
 
-    buildNodesAndEdges(tree, nodes, edges, outputId, options, onRecipeChange)
+    buildNodesAndEdges(tree, nodes, edges, outputId, options, callbacks, state)
 
     if (options?.autoMerge) {
         ;({ nodes, edges } = mergeNodes(nodes, edges))
@@ -186,7 +217,7 @@ export function treeToGraph(tree: ProductionNode, options?: GraphOptions, onReci
     g.setGraph({ rankdir: direction, nodesep: 40, ranksep: 80 })
 
     for (const node of nodes) {
-        g.setNode(node.id, { width: NODE_WIDTH, height: NODE_HEIGHT })
+        g.setNode(node.id, { width: NODE_WIDTH, height: estimateNodeHeight(node.data as Record<string, unknown>) })
     }
     for (const edge of edges) {
         g.setEdge(edge.source, edge.target)
@@ -196,9 +227,10 @@ export function treeToGraph(tree: ProductionNode, options?: GraphOptions, onReci
 
     for (const node of nodes) {
         const dagreNode = g.node(node.id)
+        const h = estimateNodeHeight(node.data as Record<string, unknown>)
         node.position = {
             x: dagreNode.x - NODE_WIDTH / 2,
-            y: dagreNode.y - NODE_HEIGHT / 2,
+            y: dagreNode.y - h / 2,
         }
         node.sourcePosition = horizontal ? Position.Right : Position.Top
         node.targetPosition = horizontal ? Position.Left : Position.Bottom

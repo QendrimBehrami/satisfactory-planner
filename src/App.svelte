@@ -18,7 +18,7 @@
   } from "$lib/components/ui/sidebar";
   import Combobox from "./components/Combobox.svelte";
   import { itemOptions } from "$lib/data";
-  import { graphOptions, recipeOverrides } from "$lib/settings";
+  import { graphOptions, recipeOverrides, doneNodes, collapsedNodes } from "$lib/settings";
 
   const nodeTypes = { production: ProductionNode };
 
@@ -30,13 +30,23 @@
     localStorage.setItem("rate", String(rate));
   });
 
-  function handleRecipeChange(changedItemId: string, recipeId: string) {
-    recipeOverrides.update(overrides => ({ ...overrides, [changedItemId]: recipeId }))
+  const callbacks = {
+    onRecipeChange: (changedItemId: string, recipeId: string) =>
+      recipeOverrides.update(o => ({ ...o, [changedItemId]: recipeId })),
+    onToggleDone: (changedItemId: string) =>
+      doneNodes.update(o => ({ ...o, [changedItemId]: !o[changedItemId] })),
+    onToggleCollapse: (changedItemId: string) =>
+      collapsedNodes.update(o => ({ ...o, [changedItemId]: !o[changedItemId] })),
   }
 
   let graph = $derived(
     itemId && rate > 0
-      ? treeToGraph(calculate(itemId, rate, $recipeOverrides), $graphOptions, handleRecipeChange)
+      ? treeToGraph(
+          calculate(itemId, rate, $recipeOverrides),
+          $graphOptions,
+          callbacks,
+          { doneNodes: $doneNodes, collapsedNodes: $collapsedNodes },
+        )
       : { nodes: [], edges: [] },
   );
 </script>

@@ -23,6 +23,7 @@
     class:resource={data.isResource}
     class:output={data.isOutput && !data.isByproduct}
     class:byproduct={data.isByproduct}
+    class:done={data.isDone}
     class:horizontal={data.horizontal}
 >
     <!-- Header: Icon + Name + Building -->
@@ -43,6 +44,22 @@
                 </p>
             {/if}
         </div>
+        {#if !data.isResource && !data.isOutput && !data.isByproduct}
+            <div class="actions">
+                <button
+                    class="action-btn"
+                    class:active={data.isDone}
+                    title={data.isDone ? "Mark as not done" : "Mark as done"}
+                    onclick={() => data.onToggleDone?.(data.itemId)}
+                >✓</button>
+                <button
+                    class="action-btn"
+                    class:active={data.isCollapsed}
+                    title={data.isCollapsed ? "Expand" : "Collapse"}
+                    onclick={() => data.onToggleCollapse?.(data.itemId)}
+                >{data.isCollapsed ? "▶" : "▼"}</button>
+            </div>
+        {/if}
     </div>
 
     {#if !data.isResource && !data.isOutput && data.availableRecipes?.length > 1}
@@ -55,6 +72,12 @@
                     <option value={recipe.value}>{recipe.label}</option>
                 {/each}
             </select>
+        </div>
+    {/if}
+
+    {#if data.isCollapsed && data.hiddenInputCount > 0}
+        <div class="collapsed-indicator">
+            {data.hiddenInputCount} input{data.hiddenInputCount > 1 ? "s" : ""} hidden
         </div>
     {/if}
 
@@ -100,7 +123,7 @@
 <Handle
     type="target"
     position={data.horizontalLayout ? Position.Left : Position.Bottom}
-    style={data.isResource ? "opacity: 0" : "opacity: 1;"}
+    style={data.isResource || data.isCollapsed ? "opacity: 0; pointer-events: none" : "opacity: 1;"}
 />
 
 <style>
@@ -134,6 +157,51 @@
 
     .byproduct .name {
         color: #92400e;
+    }
+
+    .done {
+        opacity: 0.5;
+    }
+
+    .actions {
+        display: flex;
+        gap: 2px;
+        margin-left: auto;
+        flex-shrink: 0;
+    }
+
+    .action-btn {
+        width: 20px;
+        height: 20px;
+        border: 1px solid #e2e8f0;
+        border-radius: 4px;
+        background: white;
+        font-size: 10px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #aaa;
+        padding: 0;
+    }
+
+    .action-btn:hover {
+        border-color: #cbd5e1;
+        color: #555;
+    }
+
+    .action-btn.active {
+        background: #f0fdf4;
+        border-color: #22c55e;
+        color: #16a34a;
+    }
+
+    .collapsed-indicator {
+        padding: 4px 10px;
+        font-size: 10px;
+        color: #aaa;
+        font-style: italic;
+        border-top: 1px solid #e2e8f0;
     }
 
     .recipe-select {
