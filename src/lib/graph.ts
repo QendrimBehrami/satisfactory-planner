@@ -1,13 +1,14 @@
 import { type Node, type Edge, MarkerType, Position } from '@xyflow/svelte'
 import type { GraphOptions, ProductionNode } from './types'
 import { recipesByOutput } from './data'
-import dagre from 'dagre'
+import ELK from 'elkjs/lib/elk.bundled.js'
 
+const elk = new ELK()
 const NODE_WIDTH = 240
 
-// Estimates based on CSS: header=48px, recipe-select=30px, section-label+padding=28px, each input row=20px
 function estimateNodeHeight(data: Record<string, unknown>): number {
-    if (data.isResource || data.isOutput) return 50
+    if (data.isResource || data.isOutput) return 52
+    if (data.isCollapsed) return 80  // header + collapsed indicator
     const inputs = (data.inputs as unknown[])?.length ?? 0
     const hasRecipeSelect = (data.availableRecipes as unknown[])?.length > 1
     return 48 + (hasRecipeSelect ? 30 : 0) + (inputs > 0 ? 28 + inputs * 20 : 0)
@@ -75,7 +76,6 @@ function buildNodesAndEdges(
         })
     }
 
-    // Add output nodes for byproducts
     for (const bp of node.byproducts) {
         const bpId = `byproduct-${bp.itemId}-${nodes.length}`
         nodes.push({
@@ -112,8 +112,7 @@ function buildNodesAndEdges(
 }
 
 function mergeNodes(nodes: Node[], edges: Edge[]): { nodes: Node[], edges: Edge[] } {
-    // Group nodes by itemId, keep the first as representative
-    const repById = new Map<string, string>() // itemId → representative node id
+    const repById = new Map<string, string>()
     const toRemove = new Set<string>()
 
     for (const node of nodes) {
@@ -123,7 +122,6 @@ function mergeNodes(nodes: Node[], edges: Edge[]): { nodes: Node[], edges: Edge[
         if (!existing) {
             repById.set(itemId, node.id)
         } else {
-            // Merge this node into the representative
             const rep = nodes.find(n => n.id === existing)!
             rep.data = {
                 ...rep.data,
@@ -139,7 +137,6 @@ function mergeNodes(nodes: Node[], edges: Edge[]): { nodes: Node[], edges: Edge[
         }
     }
 
-    // Redirect edges from removed nodes to their representative (skip output nodes)
     const redirectedEdges = edges.map(edge => {
         const sourceNode = nodes.find(n => n.id === edge.source)
         const targetNode = nodes.find(n => n.id === edge.target)
@@ -152,7 +149,6 @@ function mergeNodes(nodes: Node[], edges: Edge[]): { nodes: Node[], edges: Edge[
         return { ...edge, source: newSource, target: newTarget }
     })
 
-    // Remove self-loops and duplicate edges
     const seenEdges = new Set<string>()
     const dedupedEdges = redirectedEdges.filter(edge => {
         if (edge.source === edge.target) return false
@@ -176,16 +172,15 @@ function mergeInputs(a: { name: string; rate: number }[] | undefined, b: { name:
     return Array.from(map.entries()).map(([name, rate]) => ({ name, rate }))
 }
 
-export function treeToGraph(
+export async function treeToGraph(
     tree: ProductionNode,
     options: GraphOptions = {},
     callbacks: GraphCallbacks = {},
     state: GraphState = { doneNodes: {}, collapsedNodes: {} },
-): { nodes: Node[], edges: Edge[] } {
+): Promise<{ nodes: Node[], edges: Edge[] }> {
     let nodes: Node[] = []
     let edges: Edge[] = []
 
-    // Add output node as the final sink
     const outputId = `output-${tree.itemId}`
     nodes.push({
         id: outputId,
@@ -210,54 +205,52 @@ export function treeToGraph(
     }
 
     const horizontal = options?.horizontalLayout ?? false
-    const direction = horizontal ? 'LR' : 'BT'
+    const direction = horizontal ? 'RIGHT' : 'UP'
 
-    const g = new dagre.graphlib.Graph()
-    g.setDefaultEdgeLabel(() => ({}))
-    g.setGraph({ rankdir: direction, nodesep: 80, ranksep: 140 })
-
-    // Byproduct nodes are positioned manually after layout — exclude from dagre
-    const byproductIds = new Set(nodes.filter(n => n.data.isByproduct).map(n => n.id))
-
-    for (const node of nodes) {
-        if (byproductIds.has(node.id)) continue
-        g.setNode(node.id, { width: NODE_WIDTH, height: estimateNodeHeight(node.data as Record<string, unknown>) })
+    const elkGraph = {
+        id: 'root',
+        layoutOptions: {
+            'elk.algorithm': 'layered',
+            'elk.direction': direction,
+            'elk.spacing.nodeNode': '100',
+            'elk.layered.spacing.nodeNodeBetweenLayers': '160',
+            'elk.edgeRouting': 'ORTHOGONAL',
+            'elk.layered.unnecessaryBendpoints': 'true',
+            'elk.layered.nodePlacement.strategy': 'BRANDES_KOEPF',
+        },
+        children: nodes.map(n => {
+            const data = n.data as Record<string, unknown>
+            const layerConstraint = (data.isOutput || data.isByproduct)
+                ? 'LAST'
+                : data.isResource
+                ? 'FIRST'
+                : 'NONE'
+            return {
+                id: n.id,
+                width: NODE_WIDTH,
+                height: estimateNodeHeight(data),
+                layoutOptions: {
+                    'elk.layered.layering.layerConstraint': layerConstraint,
+                },
+            }
+        }),
+        edges: edges.map(e => ({
+            id: e.id,
+            sources: [e.source],
+            targets: [e.target],
+        })),
     }
-    for (const edge of edges) {
-        if (byproductIds.has(edge.source) || byproductIds.has(edge.target)) continue
-        g.setEdge(edge.source, edge.target)
-    }
 
-    dagre.layout(g)
+    const layout = await elk.layout(elkGraph)
 
-    // Build a map of node positions for byproduct parent lookup
-    const posById = new Map<string, { x: number, y: number }>()
-
-    for (const node of nodes) {
-        if (byproductIds.has(node.id)) continue
-        const dagreNode = g.node(node.id)
-        const h = estimateNodeHeight(node.data as Record<string, unknown>)
-        node.position = {
-            x: dagreNode.x - NODE_WIDTH / 2,
-            y: dagreNode.y - h / 2,
+    const nodeById = new Map(nodes.map(n => [n.id, n]))
+    for (const child of layout.children ?? []) {
+        const node = nodeById.get(child.id)
+        if (node && child.x !== undefined && child.y !== undefined) {
+            node.position = { x: child.x, y: child.y }
+            node.sourcePosition = horizontal ? Position.Right : Position.Top
+            node.targetPosition = horizontal ? Position.Left : Position.Bottom
         }
-        node.sourcePosition = horizontal ? Position.Right : Position.Top
-        node.targetPosition = horizontal ? Position.Left : Position.Bottom
-        posById.set(node.id, node.position)
-    }
-
-    // Position byproduct nodes to the side of their parent
-    let byproductOffset = 0
-    for (const node of nodes) {
-        if (!byproductIds.has(node.id)) continue
-        const parentEdge = edges.find(e => e.target === node.id)
-        const parentPos = parentEdge ? posById.get(parentEdge.source) : null
-        node.position = parentPos
-            ? { x: parentPos.x + NODE_WIDTH + 80, y: parentPos.y + byproductOffset * 70 }
-            : { x: 0, y: byproductOffset * 70 }
-        node.sourcePosition = horizontal ? Position.Right : Position.Top
-        node.targetPosition = horizontal ? Position.Left : Position.Bottom
-        byproductOffset++
     }
 
     return { nodes, edges }

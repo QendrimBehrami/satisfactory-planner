@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { SvelteFlow, Background, MarkerType } from "@xyflow/svelte";
+  import { SvelteFlow, Background, MarkerType, type Node, type Edge } from "@xyflow/svelte";
   import "@xyflow/svelte/dist/style.css";
   import { calculate } from "./lib/calculator";
   import { treeToGraph } from "./lib/graph";
@@ -22,18 +22,21 @@
       collapsedNodes.update(o => ({ ...o, [itemId]: !o[itemId] })),
   }
 
-  let graph = $derived(
-    $activePlan?.itemId && $activePlan.rate > 0
-      ? treeToGraph(
-          calculate($activePlan.itemId, $activePlan.rate, $activePlan.recipeOverrides),
-          $graphOptions,
-          callbacks,
-          { doneNodes: $doneNodes, collapsedNodes: $collapsedNodes },
-        )
-      : { nodes: [], edges: [] },
-  );
-
+  let graph = $state<{ nodes: Node[], edges: Edge[] }>({ nodes: [], edges: [] });
   let selectedNodeId = $state<string | null>(null);
+
+  $effect(() => {
+    if (!$activePlan?.itemId || $activePlan.rate <= 0) {
+      graph = { nodes: [], edges: [] };
+      return;
+    }
+    treeToGraph(
+      calculate($activePlan.itemId, $activePlan.rate, $activePlan.recipeOverrides),
+      $graphOptions,
+      callbacks,
+      { doneNodes: $doneNodes, collapsedNodes: $collapsedNodes },
+    ).then(g => { graph = g });
+  });
 
   let edges = $derived(
     selectedNodeId
