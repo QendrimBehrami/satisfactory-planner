@@ -3,8 +3,9 @@ import type { GraphOptions } from './types'
 
 const stored = localStorage.getItem('settings')
 const initial: GraphOptions = stored ? JSON.parse(stored) : {
-    animatedEdges: false,
-    horizontalLayout: false,
+    animatedEdges: true,
+    horizontalLayout: true,
+    autoMerge: true,
 }
 
 export const graphOptions = writable<GraphOptions>(initial)

@@ -21,6 +21,8 @@
 <div
     class="node"
     class:resource={data.isResource}
+    class:output={data.isOutput && !data.isByproduct}
+    class:byproduct={data.isByproduct}
     class:horizontal={data.horizontal}
 >
     <!-- Header: Icon + Name + Building -->
@@ -34,7 +36,7 @@
         />
         <div class="header-text">
             <p class="name">{formatNumber(data.rate)} {data.label}</p>
-            {#if !data.isResource}
+            {#if !data.isResource && !data.isOutput}
                 <p class="building">
                     {formatNumber(data.machines)}
                     {data.buildingName}
@@ -43,7 +45,7 @@
         </div>
     </div>
 
-    {#if !data.isResource && data.availableRecipes?.length > 1}
+    {#if !data.isResource && !data.isOutput && data.availableRecipes?.length > 1}
         <div class="recipe-select">
             <select
                 value={data.recipeId}
@@ -56,7 +58,7 @@
         </div>
     {/if}
 
-    {#if !data.isResource}
+    {#if !data.isResource && !data.isOutput}
         <!-- Inputs -->
         <div class="section">
             <p class="section-label">IN</p>
@@ -112,8 +114,26 @@
     }
 
     .resource {
+        border-color: #f97316;
+        background: #fff7ed;
+    }
+
+    .output {
         border-color: #22c55e;
         background: #f0fdf4;
+    }
+
+    .output .name {
+        color: #166534;
+    }
+
+    .byproduct {
+        border: 1px dashed #d97706;
+        background: #fffbeb;
+    }
+
+    .byproduct .name {
+        color: #92400e;
     }
 
     .recipe-select {
@@ -141,7 +161,7 @@
     }
 
     .resource .header {
-        border-bottom-color: #bbf7d0;
+        border-bottom-color: #fed7aa;
     }
 
     .icon {

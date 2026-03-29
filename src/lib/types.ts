@@ -35,6 +35,12 @@ export interface GameData {
 }
 
 
+export interface Byproduct {
+    itemId: string
+    itemName: string
+    rate: number
+}
+
 export interface ProductionNode {
     itemId: string
     itemName: string
@@ -44,9 +50,11 @@ export interface ProductionNode {
     machines: number
     power: number      // MW
     inputs: ProductionNode[]
+    byproducts: Byproduct[]
 }
 
 export interface GraphOptions {
     animatedEdges?: boolean
     horizontalLayout?: boolean
+    autoMerge?: boolean
 }

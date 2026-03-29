@@ -82,6 +82,10 @@
           />
           Horizontal layout
         </label>
+        <label class="flex items-center gap-2 px-2 text-sm">
+          <input type="checkbox" bind:checked={$graphOptions.autoMerge} />
+          Auto-merge nodes
+        </label>
       </Group>
     </Content>
 

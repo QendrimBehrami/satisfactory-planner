@@ -1,4 +1,4 @@
-import type { Recipe, ProductionNode } from './types'
+import type { Recipe, ProductionNode, Byproduct } from './types'
 import { items, buildings, recipesByOutput } from './data'
 
 
@@ -36,6 +36,7 @@ export function calculate(itemId: string, rate: number, overrides: Record<string
             machines: 0,
             power: 0,
             inputs: [],
+            byproducts: [],
         }
     }
 
@@ -53,6 +54,15 @@ export function calculate(itemId: string, rate: number, overrides: Record<string
         return calculate(input.item, inputRate, overrides, new Set(visited))
     })
 
+    // Collect byproducts (outputs other than the primary item)
+    const byproducts: Byproduct[] = recipe.outputs
+        .filter(o => o.item !== itemId)
+        .map(o => ({
+            itemId: o.item,
+            itemName: items[o.item]?.name ?? o.item,
+            rate: (o.amount / recipe.time) * 60 * machines,
+        }))
+
     return {
         itemId,
         itemName: item?.name ?? itemId,
@@ -62,5 +72,6 @@ export function calculate(itemId: string, rate: number, overrides: Record<string
         machines,
         power,
         inputs,
+        byproducts,
     }
 }
