@@ -5,10 +5,11 @@ import { items, buildings, recipesByOutput } from './data'
 
 // ── Helpers ────────────────────────────────────────────────────────────────
 
-function getDefaultRecipe(itemId: string): Recipe | null {
+function getRecipe(itemId: string, overrides: Record<string, string>): Recipe | null {
     const recipes = recipesByOutput[itemId]
     if (!recipes || recipes.length === 0) return null
-    // Use first non-alternate recipe, fall back to first available
+    const overrideId = overrides[itemId]
+    if (overrideId) return recipes.find(r => r.id === overrideId) ?? recipes.find(r => !r.alternate) ?? recipes[0]
     return recipes.find(r => !r.alternate) ?? recipes[0]
 }
 
@@ -19,9 +20,9 @@ function getRatePerMinute(recipe: Recipe, outputItemId: string): number {
 
 // ── Calculator ─────────────────────────────────────────────────────────────
 
-export function calculate(itemId: string, rate: number, visited = new Set<string>()): ProductionNode {
+export function calculate(itemId: string, rate: number, overrides: Record<string, string> = {}, visited = new Set<string>()): ProductionNode {
     const item = items[itemId]
-    const recipe = getDefaultRecipe(itemId)
+    const recipe = getRecipe(itemId, overrides)
     const isRawResource = item?.isResource ?? false
 
     // Raw resource or cycle detected – no further inputs
@@ -49,7 +50,7 @@ export function calculate(itemId: string, rate: number, visited = new Set<string
     const inputs: ProductionNode[] = recipe.inputs.map(input => {
         const inputRatePerMachine = (input.amount / recipe.time) * 60
         const inputRate = inputRatePerMachine * machines
-        return calculate(input.item, inputRate, new Set(visited))
+        return calculate(input.item, inputRate, overrides, new Set(visited))
     })
 
     return {

@@ -43,6 +43,19 @@
         </div>
     </div>
 
+    {#if !data.isResource && data.availableRecipes?.length > 1}
+        <div class="recipe-select">
+            <select
+                value={data.recipeId}
+                onchange={(e) => data.onRecipeChange?.(data.itemId, e.currentTarget.value)}
+            >
+                {#each data.availableRecipes as recipe}
+                    <option value={recipe.value}>{recipe.label}</option>
+                {/each}
+            </select>
+        </div>
+    {/if}
+
     {#if !data.isResource}
         <!-- Inputs -->
         <div class="section">
@@ -101,6 +114,22 @@
     .resource {
         border-color: #22c55e;
         background: #f0fdf4;
+    }
+
+    .recipe-select {
+        padding: 4px 8px;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .recipe-select select {
+        width: 100%;
+        font-size: 11px;
+        color: #555;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 4px;
+        padding: 2px 4px;
+        cursor: pointer;
     }
 
     .header {

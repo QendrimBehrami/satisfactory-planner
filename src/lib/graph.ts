@@ -1,5 +1,6 @@
 import { type Node, type Edge, MarkerType, Position } from '@xyflow/svelte'
 import type { GraphOptions, ProductionNode } from './types'
+import { recipesByOutput } from './data'
 import dagre from 'dagre'
 
 const NODE_WIDTH = 240
@@ -10,7 +11,8 @@ function buildNodesAndEdges(
     nodes: Node[],
     edges: Edge[],
     parentId: string | null,
-    options?: GraphOptions
+    options?: GraphOptions,
+    onRecipeChange?: (itemId: string, recipeId: string) => void
 ): void {
     const id = `${node.itemId}-${nodes.length}`
 
@@ -30,6 +32,10 @@ function buildNodesAndEdges(
                 rate: input.rate,
             })),
             horizontalLayout: options?.horizontalLayout ?? false,
+            itemId: node.itemId,
+            recipeId: node.recipe?.id ?? null,
+            availableRecipes: (recipesByOutput[node.itemId] ?? []).map(r => ({ value: r.id, label: r.name })),
+            onRecipeChange,
         },
         type: 'production',
     })
@@ -46,15 +52,15 @@ function buildNodesAndEdges(
     }
 
     for (const input of node.inputs) {
-        buildNodesAndEdges(input, nodes, edges, id, options)
+        buildNodesAndEdges(input, nodes, edges, id, options, onRecipeChange)
     }
 }
 
-export function treeToGraph(tree: ProductionNode, options?: GraphOptions): { nodes: Node[], edges: Edge[] } {
+export function treeToGraph(tree: ProductionNode, options?: GraphOptions, onRecipeChange?: (itemId: string, recipeId: string) => void): { nodes: Node[], edges: Edge[] } {
     const nodes: Node[] = []
     const edges: Edge[] = []
 
-    buildNodesAndEdges(tree, nodes, edges, null, options)
+    buildNodesAndEdges(tree, nodes, edges, null, options, onRecipeChange)
 
     const horizontal = options?.horizontalLayout ?? false
     const direction = horizontal ? 'LR' : 'BT'
