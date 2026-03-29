@@ -87,7 +87,15 @@
             <p class="section-label">IN</p>
             {#each data.inputs as input}
                 <div class="row">
-                    <span class="item-name">{input.name}</span>
+                    <div class="input-label">
+                        <img
+                            src={getIconPath(input.name)}
+                            alt={input.name}
+                            class="input-icon"
+                            onerror={(e) => (e.currentTarget.style.display = "none")}
+                        />
+                        <span class="item-name">{input.name}</span>
+                    </div>
                     <span class="rate">{formatNumber(input.rate)}/min</span>
                 </div>
             {/each}
@@ -273,6 +281,20 @@
         justify-content: space-between;
         align-items: center;
         gap: 12px;
+    }
+
+    .input-label {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        min-width: 0;
+    }
+
+    .input-icon {
+        width: 14px;
+        height: 14px;
+        object-fit: contain;
+        flex-shrink: 0;
     }
 
     .item-name {
