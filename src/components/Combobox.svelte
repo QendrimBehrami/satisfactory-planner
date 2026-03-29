@@ -8,10 +8,12 @@
         value = $bindable(""),
         options = [],
         placeholder = "Search...",
+        onchange,
     }: {
         value: string;
         options: { value: string; label: string }[];
         placeholder?: string;
+        onchange?: (value: string) => void;
     } = $props();
 
     let open = $state(false);
@@ -62,6 +64,7 @@
                             value={option.value}
                             onSelect={() => {
                                 value = option.value;
+                                onchange?.(option.value);
                                 closeAndFocusTrigger();
                             }}
                         >
