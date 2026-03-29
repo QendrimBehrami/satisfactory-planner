@@ -7,11 +7,21 @@ const elk = new ELK()
 const NODE_WIDTH = 240
 
 function estimateNodeHeight(data: Record<string, unknown>): number {
-    if (data.isResource || data.isOutput) return 52
-    if (data.isCollapsed) return 80  // header + collapsed indicator
+    if (data.isOutput || data.isByproduct) return 52  // only header
+    if (data.isResource) return 52                     // only header
+
     const inputs = (data.inputs as unknown[])?.length ?? 0
     const hasRecipeSelect = (data.availableRecipes as unknown[])?.length > 1
-    return 48 + (hasRecipeSelect ? 30 : 0) + (inputs > 0 ? 28 + inputs * 20 : 0)
+
+    const header = 48          // padding 8+8 + icon 32
+    const headerBorder = 1
+    const recipeSelect = hasRecipeSelect ? 29 : 0    // padding 4+4 + select 21
+    const collapsedIndicator = (data.isCollapsed && (data.hiddenInputCount as number) > 0) ? 22 : 0
+    const sectionPadding = 12  // padding 6+6
+    const sectionLabel = 18    // font 10px + margin 3 + letter-spacing
+    const inputRows = inputs * 20  // row height ~20px
+
+    return header + headerBorder + recipeSelect + collapsedIndicator + sectionPadding + sectionLabel + inputRows
 }
 
 interface GraphCallbacks {
@@ -116,22 +126,18 @@ function mergeNodes(nodes: Node[], edges: Edge[]): { nodes: Node[], edges: Edge[
     const toRemove = new Set<string>()
 
     for (const node of nodes) {
-        if (node.data.isOutput) continue
-        const itemId = node.data.itemId as string
-        const existing = repById.get(itemId)
+        if (node.data.isOutput && !node.data.isByproduct) continue
+        const key = node.data.isByproduct
+            ? `byproduct-${node.data.itemId as string}`
+            : node.data.itemId as string
+        const existing = repById.get(key)
         if (!existing) {
-            repById.set(itemId, node.id)
+            repById.set(key, node.id)
         } else {
             const rep = nodes.find(n => n.id === existing)!
             rep.data = {
                 ...rep.data,
                 rate: (rep.data.rate as number) + (node.data.rate as number),
-                machines: (rep.data.machines as number) + (node.data.machines as number),
-                power: (rep.data.power as number) + (node.data.power as number),
-                inputs: mergeInputs(
-                    rep.data.inputs as { name: string; rate: number }[],
-                    node.data.inputs as { name: string; rate: number }[]
-                ),
             }
             toRemove.add(node.id)
         }
@@ -140,11 +146,14 @@ function mergeNodes(nodes: Node[], edges: Edge[]): { nodes: Node[], edges: Edge[
     const redirectedEdges = edges.map(edge => {
         const sourceNode = nodes.find(n => n.id === edge.source)
         const targetNode = nodes.find(n => n.id === edge.target)
-        const newSource = !sourceNode?.data.isOutput
-            ? (repById.get(sourceNode?.data.itemId as string) ?? edge.source)
+        const getKey = (n: typeof sourceNode) => n?.data.isByproduct
+            ? `byproduct-${n.data.itemId as string}`
+            : n?.data.itemId as string
+        const newSource = (!sourceNode?.data.isOutput || sourceNode?.data.isByproduct)
+            ? (repById.get(getKey(sourceNode)) ?? edge.source)
             : edge.source
-        const newTarget = !targetNode?.data.isOutput
-            ? (repById.get(targetNode?.data.itemId as string) ?? edge.target)
+        const newTarget = (!targetNode?.data.isOutput || targetNode?.data.isByproduct)
+            ? (repById.get(getKey(targetNode)) ?? edge.target)
             : edge.target
         return { ...edge, source: newSource, target: newTarget }
     })
@@ -201,7 +210,7 @@ export async function treeToGraph(
     buildNodesAndEdges(tree, nodes, edges, outputId, options, callbacks, state)
 
     if (options?.autoMerge) {
-        ;({ nodes, edges } = mergeNodes(nodes, edges))
+        ; ({ nodes, edges } = mergeNodes(nodes, edges))
     }
 
     const horizontal = options?.horizontalLayout ?? false
@@ -212,19 +221,20 @@ export async function treeToGraph(
         layoutOptions: {
             'elk.algorithm': 'layered',
             'elk.direction': direction,
-            'elk.spacing.nodeNode': '100',
-            'elk.layered.spacing.nodeNodeBetweenLayers': '160',
-            'elk.edgeRouting': 'ORTHOGONAL',
+            'elk.spacing.nodeNode': '64',
+            'elk.layered.spacing.nodeNodeBetweenLayers': '128',
+            'elk.edgeRouting': 'POLYLINE',
             'elk.layered.unnecessaryBendpoints': 'true',
             'elk.layered.nodePlacement.strategy': 'BRANDES_KOEPF',
+            'elk.layered.crossingMinimization.strategy': 'LAYER_SWEEP',
         },
         children: nodes.map(n => {
             const data = n.data as Record<string, unknown>
             const layerConstraint = (data.isOutput || data.isByproduct)
                 ? 'LAST'
                 : data.isResource
-                ? 'FIRST'
-                : 'NONE'
+                    ? 'FIRST'
+                    : 'NONE'
             return {
                 id: n.id,
                 width: NODE_WIDTH,

@@ -101,30 +101,6 @@
             {/each}
         </div>
 
-        <!-- Divider -->
-        <div class="divider"></div>
-
-        <!-- Output -->
-        <!-- <div class="section">
-            <p class="section-label">OUT</p>
-            <div class="row">
-                <span class="item-name">{data.label}</span>
-                <span class="rate">{formatNumber(data.rate)}/min</span>
-            </div>
-        </div> -->
-
-        <!-- Stats -->
-        <!-- <div class="divider"></div>
-        <div class="stats">
-            <span>{formatNumber(data.machines)}×</span>
-            <span>{formatNumber(data.power)} MW</span>
-        </div> -->
-        <!-- {:else}
-        <div class="section">
-            <div class="row">
-                <span class="rate">{formatNumber(data.rate)}/min</span>
-            </div>
-        </div> -->
     {/if}
 </div>
 
@@ -306,21 +282,4 @@
         font-variant-numeric: tabular-nums;
     }
 
-    .divider {
-        height: 1px;
-        background: #e2e8f0;
-    }
-
-    .stats {
-        display: flex;
-        justify-content: space-between;
-        padding: 6px 10px;
-        color: #888;
-        font-size: 11px;
-    }
-
-    .horizontal {
-        min-width: 160px;
-        max-width: 160px;
-    }
 </style>

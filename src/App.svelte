@@ -6,7 +6,7 @@
   import ProductionNode from "./components/ProductionNode.svelte";
   import WelcomeModal from "./components/WelcomeModal.svelte";
   import TopBar from "./components/TopBar.svelte";
-  import { graphOptions, doneNodes, collapsedNodes } from "$lib/settings";
+  import { graphOptions } from "$lib/settings";
   import { activePlan, updatePlan } from "$lib/plans";
 
   const nodeTypes = { production: ProductionNode };
@@ -17,9 +17,13 @@
         recipeOverrides: { ...$activePlan.recipeOverrides, [itemId]: recipeId },
       }),
     onToggleDone: (itemId: string) =>
-      doneNodes.update(o => ({ ...o, [itemId]: !o[itemId] })),
+      updatePlan($activePlan.id, {
+        doneNodes: { ...$activePlan.doneNodes, [itemId]: !$activePlan.doneNodes[itemId] },
+      }),
     onToggleCollapse: (itemId: string) =>
-      collapsedNodes.update(o => ({ ...o, [itemId]: !o[itemId] })),
+      updatePlan($activePlan.id, {
+        collapsedNodes: { ...$activePlan.collapsedNodes, [itemId]: !$activePlan.collapsedNodes[itemId] },
+      }),
   }
 
   let graph = $state<{ nodes: Node[], edges: Edge[] }>({ nodes: [], edges: [] });
@@ -34,7 +38,7 @@
       calculate($activePlan.itemId, $activePlan.rate, $activePlan.recipeOverrides),
       $graphOptions,
       callbacks,
-      { doneNodes: $doneNodes, collapsedNodes: $collapsedNodes },
+      { doneNodes: $activePlan.doneNodes, collapsedNodes: $activePlan.collapsedNodes },
     ).then(g => { graph = g });
   });
 

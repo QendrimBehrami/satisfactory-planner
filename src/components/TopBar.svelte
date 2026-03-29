@@ -53,10 +53,13 @@
         {#each $plans as plan (plan.id)}
             {@const isActive = plan.id === $activePlanId}
             {@const iconId = plan.iconItemId ?? plan.itemId}
-            <button
+            <div
                 class="tab"
                 class:active={isActive}
+                role="button"
+                tabindex="0"
                 onclick={() => activePlanId.set(plan.id)}
+                onkeydown={(e) => e.key === 'Enter' && activePlanId.set(plan.id)}
             >
                 <img
                     src={getIconPath(items[iconId]?.name ?? "")}
@@ -92,7 +95,7 @@
                         aria-label="Delete plan">×</button
                     >
                 {/if}
-            </button>
+            </div>
         {/each}
         <button class="tab-add" onclick={addPlan} aria-label="Add plan"
             >+</button
