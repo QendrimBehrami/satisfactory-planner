@@ -214,18 +214,27 @@ export function treeToGraph(
 
     const g = new dagre.graphlib.Graph()
     g.setDefaultEdgeLabel(() => ({}))
-    g.setGraph({ rankdir: direction, nodesep: 40, ranksep: 80 })
+    g.setGraph({ rankdir: direction, nodesep: 80, ranksep: 140 })
+
+    // Byproduct nodes are positioned manually after layout — exclude from dagre
+    const byproductIds = new Set(nodes.filter(n => n.data.isByproduct).map(n => n.id))
 
     for (const node of nodes) {
+        if (byproductIds.has(node.id)) continue
         g.setNode(node.id, { width: NODE_WIDTH, height: estimateNodeHeight(node.data as Record<string, unknown>) })
     }
     for (const edge of edges) {
+        if (byproductIds.has(edge.source) || byproductIds.has(edge.target)) continue
         g.setEdge(edge.source, edge.target)
     }
 
     dagre.layout(g)
 
+    // Build a map of node positions for byproduct parent lookup
+    const posById = new Map<string, { x: number, y: number }>()
+
     for (const node of nodes) {
+        if (byproductIds.has(node.id)) continue
         const dagreNode = g.node(node.id)
         const h = estimateNodeHeight(node.data as Record<string, unknown>)
         node.position = {
@@ -234,6 +243,21 @@ export function treeToGraph(
         }
         node.sourcePosition = horizontal ? Position.Right : Position.Top
         node.targetPosition = horizontal ? Position.Left : Position.Bottom
+        posById.set(node.id, node.position)
+    }
+
+    // Position byproduct nodes to the side of their parent
+    let byproductOffset = 0
+    for (const node of nodes) {
+        if (!byproductIds.has(node.id)) continue
+        const parentEdge = edges.find(e => e.target === node.id)
+        const parentPos = parentEdge ? posById.get(parentEdge.source) : null
+        node.position = parentPos
+            ? { x: parentPos.x + NODE_WIDTH + 80, y: parentPos.y + byproductOffset * 70 }
+            : { x: 0, y: byproductOffset * 70 }
+        node.sourcePosition = horizontal ? Position.Right : Position.Top
+        node.targetPosition = horizontal ? Position.Left : Position.Bottom
+        byproductOffset++
     }
 
     return { nodes, edges }
