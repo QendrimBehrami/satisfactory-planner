@@ -5,6 +5,7 @@ import tailwindcss from '@tailwindcss/vite'
 
 export default defineConfig({
   base: '/satisfactory-planner/',
+  assetsInclude: ['**/*.wasm'],
   plugins: [
     tailwindcss(),
     svelte(),

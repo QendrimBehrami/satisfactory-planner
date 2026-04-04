@@ -9,6 +9,8 @@ export interface Plan {
     recipeOverrides: Record<string, string>
     doneNodes: Record<string, boolean>
     collapsedNodes: Record<string, boolean>
+    nodePositions: Record<string, { x: number, y: number }>
+    resourceLimits: Record<string, number>
 }
 
 function createPlanDefaults(): Plan {
@@ -20,6 +22,8 @@ function createPlanDefaults(): Plan {
         recipeOverrides: {},
         doneNodes: {},
         collapsedNodes: {},
+        nodePositions: {},
+        resourceLimits: {},
     }
 }
 

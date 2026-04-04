@@ -138,6 +138,14 @@ function mergeNodes(nodes: Node[], edges: Edge[]): { nodes: Node[], edges: Edge[
             rep.data = {
                 ...rep.data,
                 rate: (rep.data.rate as number) + (node.data.rate as number),
+                ...(!node.data.isByproduct && {
+                    machines: (rep.data.machines as number) + (node.data.machines as number),
+                    power: (rep.data.power as number) + (node.data.power as number),
+                    inputs: mergeInputs(
+                        rep.data.inputs as { name: string; rate: number }[],
+                        node.data.inputs as { name: string; rate: number }[]
+                    ),
+                }),
             }
             toRemove.add(node.id)
         }

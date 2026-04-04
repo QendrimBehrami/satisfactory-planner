@@ -25,3 +25,5 @@ en-US.json
 *.njsproj
 *.sln
 *.sw?
+
+src/seeds.txt

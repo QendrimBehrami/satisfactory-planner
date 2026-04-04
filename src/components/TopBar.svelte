@@ -10,8 +10,43 @@
     import { graphOptions } from "$lib/settings";
     import { getIconPath, itemOptions, items } from "$lib/data";
     import Combobox from "./Combobox.svelte";
+    import { unlockedAlternates } from '$lib/settings'
+    import { optimize, type ResourceLimit } from '$lib/optimizer'
 
+    let { currentView = $bindable() }: { currentView: 'planner' | 'alternates' } = $props();
     let settingsOpen = $state(false);
+    let optimizeOpen = $state(false);
+    let optimizing = $state(false);
+    let optimizeResult = $state<string | null>(null);
+    let optimizeError = $state<string | null>(null);
+
+    const resourceItems = Object.entries(items)
+        .filter(([, item]) => item.isResource)
+        .map(([id, item]) => ({ id, name: item.name }))
+        .sort((a, b) => a.name.localeCompare(b.name))
+
+    async function runOptimize() {
+        if (!$activePlan) return
+        optimizing = true
+        optimizeResult = null
+        optimizeError = null
+        try {
+            const limits: ResourceLimit[] = resourceItems
+                .filter(r => ($activePlan.resourceLimits?.[r.id] ?? 0) > 0)
+                .map(r => ({ itemId: r.id, rate: $activePlan.resourceLimits[r.id] }))
+            const res = await optimize($activePlan.itemId, limits, $unlockedAlternates)
+            if (res.rate <= 0) {
+                optimizeError = 'No feasible solution found.'
+            } else {
+                updatePlan($activePlan.id, { rate: res.rate, recipeOverrides: res.recipeOverrides })
+                optimizeResult = `Max rate: ${res.rate}/min`
+            }
+        } catch (e) {
+            optimizeError = String(e)
+        } finally {
+            optimizing = false
+        }
+    }
     let editingPlanId = $state<string | null>(null);
     let editingName = $state("");
 
@@ -39,6 +74,7 @@
 <svelte:window
     onclick={() => {
         if (settingsOpen) settingsOpen = false;
+        if (optimizeOpen) optimizeOpen = false;
     }}
 />
 
@@ -126,10 +162,55 @@
                 />
                 <span class="rate-unit">/min</span>
             </div>
+            <div class="settings-wrap">
+                <button
+                    class="opt-trigger"
+                    class:active={optimizeOpen}
+                    onclick={(e) => { e.stopPropagation(); optimizeOpen = !optimizeOpen; settingsOpen = false; }}
+                >⚡ Optimize</button>
+                {#if optimizeOpen}
+                    <div class="optimize-popover" onclick={(e) => e.stopPropagation()}>
+                        <div class="popover-section-label">Resource Limits</div>
+                        <div class="resource-list">
+                            {#each resourceItems as resource}
+                                <div class="resource-row">
+                                    <img src={getIconPath(resource.name)} alt="" class="resource-icon" onerror={(e) => (e.currentTarget.style.display = 'none')} />
+                                    <span class="resource-name">{resource.name}</span>
+                                    <div class="input-wrap">
+                                        <input
+                                            type="number"
+                                            min="0"
+                                            placeholder="—"
+                                            value={$activePlan.resourceLimits?.[resource.id] ?? ''}
+                                            oninput={(e) => updatePlan($activePlan.id, {
+                                                resourceLimits: { ...($activePlan.resourceLimits ?? {}), [resource.id]: Number(e.currentTarget.value) }
+                                            })}
+                                            class="limit-input"
+                                        />
+                                        <span class="limit-unit">/min</span>
+                                    </div>
+                                </div>
+                            {/each}
+                        </div>
+                        {#if optimizeError}<div class="opt-error">{optimizeError}</div>{/if}
+                        {#if optimizeResult}<div class="opt-result">{optimizeResult}</div>{/if}
+                        <button class="opt-btn" onclick={runOptimize} disabled={optimizing}>
+                            {optimizing ? 'Optimizing...' : 'Optimize'}
+                        </button>
+                    </div>
+                {/if}
+            </div>
         </div>
     {/if}
 
     <div class="spacer"></div>
+
+    <button
+        class="nav-btn"
+        class:active={currentView === 'alternates'}
+        onclick={() => currentView = currentView === 'alternates' ? 'planner' : 'alternates'}
+        aria-label="Alternates"
+    >Alternates</button>
 
     <div class="settings-wrap">
         <button
@@ -324,6 +405,159 @@
 
     .spacer {
         flex: 1;
+    }
+
+    .optimize-popover {
+        position: absolute;
+        top: calc(100% + 6px);
+        right: 0;
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        z-index: 100;
+        width: 280px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .popover-section-label {
+        font-size: 11px;
+        font-weight: 600;
+        color: #aaa;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .resource-list {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        max-height: 300px;
+        overflow-y: auto;
+    }
+
+    .resource-row {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .resource-icon {
+        width: 16px;
+        height: 16px;
+        object-fit: contain;
+        flex-shrink: 0;
+    }
+
+    .resource-name {
+        flex: 1;
+        font-size: 12px;
+        color: #333;
+    }
+
+    .input-wrap {
+        display: flex;
+        align-items: center;
+        gap: 3px;
+        border: 1px solid #e2e8f0;
+        border-radius: 4px;
+        padding: 2px 6px;
+    }
+
+    .input-wrap:focus-within {
+        border-color: #94a3b8;
+    }
+
+    .limit-input {
+        width: 52px;
+        border: none;
+        outline: none;
+        font-size: 12px;
+        color: #1a1a1a;
+        padding: 0;
+    }
+
+    .limit-unit {
+        font-size: 11px;
+        color: #aaa;
+    }
+
+    .opt-error {
+        font-size: 11px;
+        color: #dc2626;
+        background: #fef2f2;
+        border-radius: 4px;
+        padding: 4px 8px;
+    }
+
+    .opt-result {
+        font-size: 11px;
+        color: #16a34a;
+        background: #f0fdf4;
+        border-radius: 4px;
+        padding: 4px 8px;
+    }
+
+    .opt-btn {
+        width: 100%;
+        padding: 6px;
+        background: #1a1a1a;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        font-size: 12px;
+        font-weight: 500;
+        cursor: pointer;
+    }
+
+    .opt-btn:hover:not(:disabled) {
+        background: #333;
+    }
+
+    .opt-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    .opt-trigger {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        padding: 5px 10px;
+        border-radius: 6px;
+        border: 1px solid #e2e8f0;
+        background: transparent;
+        cursor: pointer;
+        font-size: 13px;
+        color: #444;
+        white-space: nowrap;
+    }
+
+    .opt-trigger:hover,
+    .opt-trigger.active {
+        background: #f1f5f9;
+        border-color: #94a3b8;
+        color: #1a1a1a;
+    }
+
+    .nav-btn {
+        padding: 6px 12px;
+        border-radius: 6px;
+        border: 1px solid transparent;
+        background: transparent;
+        cursor: pointer;
+        font-size: 13px;
+        color: #666;
+    }
+
+    .nav-btn:hover,
+    .nav-btn.active {
+        background: #f1f5f9;
+        border-color: #e2e8f0;
+        color: #1a1a1a;
     }
 
     .settings-wrap {

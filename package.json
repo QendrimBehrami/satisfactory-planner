@@ -1,7 +1,7 @@
 {
   "name": "satisfactory-planner",
   "private": true,
-  "version": "0.3.0",
+  "version": "0.4.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -36,6 +36,7 @@
   "dependencies": {
     "@types/dagre": "^0.7.54",
     "@xyflow/svelte": "^1.5.2",
-    "elkjs": "^0.11.1"
+    "elkjs": "^0.11.1",
+    "highs": "^1.8.0"
   }
 }
