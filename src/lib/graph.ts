@@ -1,5 +1,5 @@
 import { type Node, type Edge, MarkerType, Position } from '@xyflow/svelte'
-import type { GraphOptions, ProductionNode } from './types'
+import type { GraphOptions, GraphCallbacks, GraphState, ProductionNode } from './types'
 import { recipesByOutput } from './data'
 import ELK from 'elkjs/lib/elk.bundled.js'
 
@@ -24,13 +24,7 @@ function estimateNodeHeight(data: Record<string, unknown>): number {
     return header + headerBorder + recipeSelect + collapsedIndicator + sectionPadding + sectionLabel + inputRows
 }
 
-interface GraphCallbacks {
-    onRecipeChange?: (itemId: string, recipeId: string) => void
-    onToggleDone?: (itemId: string) => void
-    onToggleCollapse?: (itemId: string) => void
-}
-
-interface GraphState {
+interface GraphStateInternal {
     doneNodes: Record<string, boolean>
     collapsedNodes: Record<string, boolean>
 }
@@ -123,6 +117,7 @@ function buildNodesAndEdges(
 
 function mergeNodes(nodes: Node[], edges: Edge[]): { nodes: Node[], edges: Edge[] } {
     const repById = new Map<string, string>()
+    const nodeMap = new Map(nodes.map(n => [n.id, n]))
     const toRemove = new Set<string>()
 
     for (const node of nodes) {
@@ -134,7 +129,7 @@ function mergeNodes(nodes: Node[], edges: Edge[]): { nodes: Node[], edges: Edge[
         if (!existing) {
             repById.set(key, node.id)
         } else {
-            const rep = nodes.find(n => n.id === existing)!
+            const rep = nodeMap.get(existing)!
             rep.data = {
                 ...rep.data,
                 rate: (rep.data.rate as number) + (node.data.rate as number),
@@ -152,8 +147,8 @@ function mergeNodes(nodes: Node[], edges: Edge[]): { nodes: Node[], edges: Edge[
     }
 
     const redirectedEdges = edges.map(edge => {
-        const sourceNode = nodes.find(n => n.id === edge.source)
-        const targetNode = nodes.find(n => n.id === edge.target)
+        const sourceNode = nodeMap.get(edge.source)
+        const targetNode = nodeMap.get(edge.target)
         const getKey = (n: typeof sourceNode) => n?.data.isByproduct
             ? `byproduct-${n.data.itemId as string}`
             : n?.data.itemId as string
@@ -189,12 +184,12 @@ function mergeInputs(a: { name: string; rate: number }[] | undefined, b: { name:
     return Array.from(map.entries()).map(([name, rate]) => ({ name, rate }))
 }
 
-export async function treeToGraph(
+export function buildGraph(
     tree: ProductionNode,
     options: GraphOptions = {},
     callbacks: GraphCallbacks = {},
     state: GraphState = { doneNodes: {}, collapsedNodes: {} },
-): Promise<{ nodes: Node[], edges: Edge[] }> {
+): { nodes: Node[], edges: Edge[] } {
     let nodes: Node[] = []
     let edges: Edge[] = []
 
@@ -220,6 +215,17 @@ export async function treeToGraph(
     if (options?.autoMerge) {
         ; ({ nodes, edges } = mergeNodes(nodes, edges))
     }
+
+    return { nodes, edges }
+}
+
+export async function treeToGraph(
+    tree: ProductionNode,
+    options: GraphOptions = {},
+    callbacks: GraphCallbacks = {},
+    state: GraphState = { doneNodes: {}, collapsedNodes: {} },
+): Promise<{ nodes: Node[], edges: Edge[] }> {
+    const { nodes, edges } = buildGraph(tree, options, callbacks, state)
 
     const horizontal = options?.horizontalLayout ?? false
     const direction = horizontal ? 'RIGHT' : 'UP'

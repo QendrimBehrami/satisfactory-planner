@@ -7,7 +7,7 @@
     let {
         value = $bindable(""),
         options = [],
-        placeholder = "Search...",
+        placeholder = "Search...\n",
         onchange,
     }: {
         value: string;

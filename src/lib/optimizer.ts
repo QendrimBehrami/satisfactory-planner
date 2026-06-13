@@ -1,6 +1,7 @@
 import HiGHS from 'highs'
 import highsWasmUrl from 'highs/runtime?url'
 import { recipes, items } from './data'
+import { recipeRatePerMinute } from './calculator'
 
 export interface ResourceLimit {
     itemId: string
@@ -19,12 +20,21 @@ const BIG_M = 100000
  * using the provided set of allowed recipe IDs (unlocked alternates + defaults).
  * Uses MIP (Mixed Integer Programming) to enforce at most one recipe per output item.
  */
+let highsInstance: Awaited<ReturnType<typeof HiGHS>> | null = null
+
+async function getHiGHS() {
+    if (!highsInstance) {
+        highsInstance = await HiGHS({ locateFile: () => highsWasmUrl })
+    }
+    return highsInstance
+}
+
 export async function optimize(
     targetItemId: string,
     resourceLimits: ResourceLimit[],
     unlockedAlternateIds: Set<string>,
 ): Promise<OptimizeResult> {
-    const highs = await HiGHS({ locateFile: () => highsWasmUrl })
+    const highs = await getHiGHS()
 
     // Collect candidate recipes: default (non-alternate) + unlocked alternates
     // SAM converter recipes are treated like alternates (must be explicitly unlocked)
@@ -59,7 +69,7 @@ export async function optimize(
         const coeffs: Record<string, number> = {}
         for (let i = 0; i < candidateRecipes.length; i++) {
             const recipe = candidateRecipes[i]
-            const ratePerMin = 60 / recipe.time
+            const ratePerMin = recipeRatePerMinute(recipe)
             const outputAmt = recipe.outputs.find((o: { item: string }) => o.item === itemId)?.amount ?? 0
             const inputAmt = recipe.inputs.find((inp: { item: string }) => inp.item === itemId)?.amount ?? 0
             const net = (outputAmt - inputAmt) * ratePerMin
@@ -83,7 +93,7 @@ export async function optimize(
     const objCoeffs: string[] = []
     for (let i = 0; i < candidateRecipes.length; i++) {
         const recipe = candidateRecipes[i]
-        const ratePerMin = 60 / recipe.time
+        const ratePerMin = recipeRatePerMinute(recipe)
         const outputAmt = recipe.outputs.find((o: { item: string }) => o.item === targetItemId)?.amount ?? 0
         const inputAmt = recipe.inputs.find((inp: { item: string }) => inp.item === targetItemId)?.amount ?? 0
         const net = (outputAmt - inputAmt) * ratePerMin
@@ -149,9 +159,7 @@ General
 ${binVarNames.map(v => `  ${v}`).join('\n')}
 End`
 
-    console.log('LP:\n', lpStr)
     const result = highs.solve(lpStr, {})
-    console.log('HiGHS result:', result.Status)
 
     if (result.Status !== 'Optimal') {
         return { rate: 0, recipeOverrides: {} }
@@ -163,7 +171,6 @@ End`
         const val = result.Columns[varNames[i]]?.Primal ?? 0
         if (val > 0.001) {
             const recipe = candidateRecipes[i]
-            console.log(`Active: ${recipe.name} = ${val}`)
             if (recipe.alternate) {
                 const primaryOutput = recipe.outputs[0].item
                 recipeOverrides[primaryOutput] = recipe.id
@@ -177,7 +184,7 @@ End`
         const val = result.Columns[varNames[i]]?.Primal ?? 0
         if (val > 0.001) {
             const recipe = candidateRecipes[i]
-            const ratePerMin = 60 / recipe.time
+            const ratePerMin = recipeRatePerMinute(recipe)
             const outputAmt = recipe.outputs.find((o: { item: string }) => o.item === targetItemId)?.amount ?? 0
             targetRate += outputAmt * ratePerMin * val
         }

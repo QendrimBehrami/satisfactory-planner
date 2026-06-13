@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { untrack } from 'svelte';
   import {
     SvelteFlow,
     Background,
@@ -8,7 +9,7 @@
   } from "@xyflow/svelte";
   import "@xyflow/svelte/dist/style.css";
   import { calculate } from "./lib/calculator";
-  import { treeToGraph } from "./lib/graph";
+  import { treeToGraph, buildGraph } from "./lib/graph";
   import ProductionNode from "./components/ProductionNode.svelte";
   import WelcomeModal from "./components/WelcomeModal.svelte";
   import TopBar from "./components/TopBar.svelte";
@@ -46,26 +47,44 @@
     edges: [],
   });
   let selectedNodeId = $state<string | null>(null);
+
+  // Tracks changes that require a full ELK re-layout
+  let layoutKey = '';
+
   $effect(() => {
     if (!$activePlan?.itemId || $activePlan.rate <= 0) {
       graph = { nodes: [], edges: [] };
+      layoutKey = '';
       return;
     }
-    treeToGraph(
-      calculate(
-        $activePlan.itemId,
-        $activePlan.rate,
-        $activePlan.recipeOverrides,
-      ),
-      $graphOptions,
-      callbacks,
-      {
-        doneNodes: $activePlan.doneNodes,
-        collapsedNodes: $activePlan.collapsedNodes,
-      },
-    ).then((g) => {
-      graph = g;
-    });
+
+    const newLayoutKey = [
+      $activePlan.id,
+      $activePlan.itemId,
+      JSON.stringify($activePlan.recipeOverrides),
+      JSON.stringify($activePlan.collapsedNodes),
+      $graphOptions.autoMerge,
+      $graphOptions.horizontalLayout,
+    ].join('|');
+
+    const tree = calculate($activePlan.itemId, $activePlan.rate, $activePlan.recipeOverrides);
+    const state = { doneNodes: $activePlan.doneNodes, collapsedNodes: $activePlan.collapsedNodes };
+
+    const prevGraph = untrack(() => graph);
+    if (newLayoutKey === layoutKey && prevGraph.nodes.length > 0) {
+      // Only rate or doneNodes changed — rebuild node data, keep existing positions
+      const { nodes, edges } = buildGraph(tree, $graphOptions, callbacks, state);
+      const posById = new Map(prevGraph.nodes.map(n => [n.id, n.position]));
+      for (const node of nodes) {
+        const pos = posById.get(node.id);
+        if (pos) node.position = pos;
+      }
+      graph = { nodes, edges };
+      return;
+    }
+
+    layoutKey = newLayoutKey;
+    treeToGraph(tree, $graphOptions, callbacks, state).then(g => { graph = g; });
   });
 
   let edges = $derived(

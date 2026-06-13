@@ -182,9 +182,16 @@
                                             min="0"
                                             placeholder="—"
                                             value={$activePlan.resourceLimits?.[resource.id] ?? ''}
-                                            oninput={(e) => updatePlan($activePlan.id, {
-                                                resourceLimits: { ...($activePlan.resourceLimits ?? {}), [resource.id]: Number(e.currentTarget.value) }
-                                            })}
+                                            oninput={(e) => {
+                                                const val = e.currentTarget.value
+                                                const next = { ...($activePlan.resourceLimits ?? {}) }
+                                                if (val === '' || Number(val) <= 0) {
+                                                    delete next[resource.id]
+                                                } else {
+                                                    next[resource.id] = Number(val)
+                                                }
+                                                updatePlan($activePlan.id, { resourceLimits: next })
+                                            }}
                                             class="limit-input"
                                         />
                                         <span class="limit-unit">/min</span>

@@ -13,6 +13,10 @@ function getRecipe(itemId: string, overrides: Record<string, string>): Recipe | 
     return recipes.find(r => !r.alternate) ?? recipes[0]
 }
 
+export function recipeRatePerMinute(recipe: Recipe): number {
+    return 60 / recipe.time
+}
+
 function getRatePerMinute(recipe: Recipe, outputItemId: string): number {
     const output = recipe.outputs.find(o => o.item === outputItemId)!
     return (output.amount / recipe.time) * 60

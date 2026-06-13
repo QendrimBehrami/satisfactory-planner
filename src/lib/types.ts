@@ -58,3 +58,14 @@ export interface GraphOptions {
     horizontalLayout?: boolean
     autoMerge?: boolean
 }
+
+export interface GraphCallbacks {
+    onRecipeChange?: (itemId: string, recipeId: string) => void
+    onToggleDone?: (itemId: string) => void
+    onToggleCollapse?: (itemId: string) => void
+}
+
+export interface GraphState {
+    doneNodes: Record<string, boolean>
+    collapsedNodes: Record<string, boolean>
+}
