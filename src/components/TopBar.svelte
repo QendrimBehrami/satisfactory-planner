@@ -16,6 +16,8 @@
     let { currentView = $bindable() }: { currentView: 'planner' | 'alternates' } = $props();
     let settingsOpen = $state(false);
     let optimizeOpen = $state(false);
+    let surplusOpen = $state(false);
+    let surplusNewItemId = $state('');
     let optimizing = $state(false);
     let optimizeResult = $state<string | null>(null);
     let optimizeError = $state<string | null>(null);
@@ -34,7 +36,7 @@
             const limits: ResourceLimit[] = resourceItems
                 .filter(r => ($activePlan.resourceLimits?.[r.id] ?? 0) > 0)
                 .map(r => ({ itemId: r.id, rate: $activePlan.resourceLimits[r.id] }))
-            const res = await optimize($activePlan.itemId, limits, $unlockedAlternates)
+            const res = await optimize($activePlan.itemId, limits, $unlockedAlternates, $activePlan.surplusRequirements ?? {})
             if (res.rate <= 0) {
                 optimizeError = 'No feasible solution found.'
             } else {
@@ -75,6 +77,7 @@
     onclick={() => {
         if (settingsOpen) settingsOpen = false;
         if (optimizeOpen) optimizeOpen = false;
+        if (surplusOpen) surplusOpen = false;
     }}
 />
 
@@ -160,13 +163,76 @@
                     class="rate-input"
                     min="0"
                 />
-                <span class="rate-unit">/min</span>
             </div>
+            <div class="settings-wrap">
+                    <button
+                        class="opt-trigger"
+                        class:active={surplusOpen}
+                        onclick={(e) => { e.stopPropagation(); surplusOpen = !surplusOpen; optimizeOpen = false; settingsOpen = false; }}
+                    ><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="6" y1="1" x2="6" y2="11"/><line x1="1" y1="6" x2="11" y2="6"/></svg> Surplus</button>
+                    {#if surplusOpen}
+                        <div class="optimize-popover" onclick={(e) => e.stopPropagation()}>
+                            <div class="popover-section-label">Surplus Requirements</div>
+                            <div class="resource-list">
+                                {#each Object.entries($activePlan.surplusRequirements ?? {}) as [itemId, rate]}
+                                    <div class="resource-row">
+                                        <img src={getIconPath(items[itemId]?.name ?? '')} alt="" class="resource-icon" onerror={(e) => (e.currentTarget.style.display = 'none')} />
+                                        <span class="resource-name">{items[itemId]?.name ?? itemId}</span>
+                                        <div class="input-wrap">
+                                            <input
+                                                type="number"
+                                                min="0"
+                                                value={rate}
+                                                oninput={(e) => {
+                                                    const val = Number(e.currentTarget.value)
+                                                    const next = { ...($activePlan.surplusRequirements ?? {}) }
+                                                    if (!val || val <= 0) {
+                                                        delete next[itemId]
+                                                    } else {
+                                                        next[itemId] = val
+                                                    }
+                                                    updatePlan($activePlan.id, { surplusRequirements: next })
+                                                }}
+                                                class="limit-input"
+                                            />
+                                            <span class="limit-unit">/min</span>
+                                        </div>
+                                        <button
+                                            class="surplus-delete"
+                                            onclick={() => {
+                                                const next = { ...($activePlan.surplusRequirements ?? {}) }
+                                                delete next[itemId]
+                                                updatePlan($activePlan.id, { surplusRequirements: next })
+                                            }}
+                                            aria-label="Remove"
+                                        >×</button>
+                                    </div>
+                                {/each}
+                                {#if Object.keys($activePlan.surplusRequirements ?? {}).length === 0}
+                                    <span class="surplus-empty">No surplus constraints set.</span>
+                                {/if}
+                            </div>
+                            <div class="surplus-add">
+                                <Combobox
+                                    value={surplusNewItemId}
+                                    onchange={(val) => {
+                                        if (!val) return
+                                        const next = { ...($activePlan.surplusRequirements ?? {}), [val]: ($activePlan.surplusRequirements?.[val] ?? 0) || 1 }
+                                        updatePlan($activePlan.id, { surplusRequirements: next })
+                                        surplusNewItemId = ''
+                                    }}
+                                    options={itemOptions}
+                                    placeholder="Add item..."
+                                />
+                            </div>
+                        </div>
+                    {/if}
+                </div>
             <div class="settings-wrap">
                 <button
                     class="opt-trigger"
                     class:active={optimizeOpen}
-                    onclick={(e) => { e.stopPropagation(); optimizeOpen = !optimizeOpen; settingsOpen = false; }}
+                    onclick={(e) => { e.stopPropagation(); optimizeOpen = !optimizeOpen; surplusOpen = false; settingsOpen = false; }}
                 >⚡ Optimize</button>
                 {#if optimizeOpen}
                     <div class="optimize-popover" onclick={(e) => e.stopPropagation()}>
@@ -402,7 +468,7 @@
     }
 
     .rate-input {
-        width: 50px;
+        width: 70px;
         border: none;
         outline: none;
         font-size: 13px;
@@ -490,6 +556,33 @@
     .limit-unit {
         font-size: 11px;
         color: #aaa;
+    }
+
+    .surplus-delete {
+        font-size: 14px;
+        color: #bbb;
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 0 2px;
+        line-height: 1;
+        flex-shrink: 0;
+    }
+
+    .surplus-delete:hover {
+        color: #ef4444;
+    }
+
+    .surplus-empty {
+        font-size: 11px;
+        color: #aaa;
+        font-style: italic;
+        padding: 2px 0;
+    }
+
+    .surplus-add {
+        border-top: 1px solid #e2e8f0;
+        padding-top: 8px;
     }
 
     .opt-error {

@@ -63,12 +63,14 @@
       $activePlan.itemId,
       JSON.stringify($activePlan.recipeOverrides),
       JSON.stringify($activePlan.collapsedNodes),
+      JSON.stringify($activePlan.surplusRequirements),
       $graphOptions.autoMerge,
       $graphOptions.horizontalLayout,
     ].join('|');
 
-    const tree = calculate($activePlan.itemId, $activePlan.rate, $activePlan.recipeOverrides);
-    const state = { doneNodes: $activePlan.doneNodes, collapsedNodes: $activePlan.collapsedNodes };
+    const surplusRequirements = $activePlan.surplusRequirements ?? {};
+    const tree = calculate($activePlan.itemId, $activePlan.rate, $activePlan.recipeOverrides, surplusRequirements);
+    const state = { doneNodes: $activePlan.doneNodes, collapsedNodes: $activePlan.collapsedNodes, surplusRequirements };
 
     const prevGraph = untrack(() => graph);
     if (newLayoutKey === layoutKey && prevGraph.nodes.length > 0) {

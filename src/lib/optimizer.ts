@@ -33,6 +33,7 @@ export async function optimize(
     targetItemId: string,
     resourceLimits: ResourceLimit[],
     unlockedAlternateIds: Set<string>,
+    surplusRequirements: Record<string, number> = {},
 ): Promise<OptimizeResult> {
     const highs = await getHiGHS()
 
@@ -83,8 +84,8 @@ export async function optimize(
             const rate = limit?.rate ?? 0
             rows.push({ name: itemId, lb: -rate, coeffs })
         } else if (itemId !== targetItemId) {
-            // Intermediate items: net flow >= 0
-            rows.push({ name: itemId, lb: 0, coeffs })
+            // Intermediate items: net flow >= surplus (0 if no surplus required)
+            rows.push({ name: itemId, lb: surplusRequirements[itemId] ?? 0, coeffs })
         }
         // targetItem: unconstrained, it's the objective
     }

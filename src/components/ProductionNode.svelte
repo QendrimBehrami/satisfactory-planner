@@ -21,8 +21,9 @@
 <div
     class="node"
     class:resource={data.isResource}
-    class:output={data.isOutput && !data.isByproduct}
+    class:output={data.isOutput && !data.isByproduct && !data.isSurplus}
     class:byproduct={data.isByproduct}
+    class:surplus={data.isSurplus}
     class:done={data.isDone}
     class:horizontal={data.horizontal}
 >
@@ -44,7 +45,7 @@
                 </p>
             {/if}
         </div>
-        {#if !data.isResource && !data.isOutput && !data.isByproduct}
+        {#if !data.isResource && !data.isOutput && !data.isByproduct && !data.isSurplus}
             <div class="actions">
                 <button
                     class="action-btn"
@@ -62,7 +63,7 @@
         {/if}
     </div>
 
-    {#if !data.isResource && !data.isOutput && data.availableRecipes?.length > 1}
+    {#if !data.isResource && !data.isOutput && !data.isSurplus && data.availableRecipes?.length > 1}
         <div class="recipe-select">
             <select
                 value={data.recipeId}
@@ -81,7 +82,7 @@
         </div>
     {/if}
 
-    {#if !data.isResource && !data.isOutput}
+    {#if !data.isResource && !data.isOutput && !data.isSurplus}
         <!-- Inputs -->
         <div class="section">
             <p class="section-label">IN</p>
@@ -141,6 +142,15 @@
 
     .byproduct .name {
         color: #92400e;
+    }
+
+    .surplus {
+        border: 1px dashed #6366f1;
+        background: #eef2ff;
+    }
+
+    .surplus .name {
+        color: #3730a3;
     }
 
     .done {
@@ -281,5 +291,6 @@
         color: #666;
         font-variant-numeric: tabular-nums;
     }
+
 
 </style>

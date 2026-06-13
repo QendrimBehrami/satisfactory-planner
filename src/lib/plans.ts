@@ -11,6 +11,7 @@ export interface Plan {
     collapsedNodes: Record<string, boolean>
     nodePositions: Record<string, { x: number, y: number }>
     resourceLimits: Record<string, number>
+    surplusRequirements: Record<string, number>
 }
 
 function createPlanDefaults(): Plan {
@@ -24,6 +25,7 @@ function createPlanDefaults(): Plan {
         collapsedNodes: {},
         nodePositions: {},
         resourceLimits: {},
+        surplusRequirements: {},
     }
 }
 

@@ -24,7 +24,13 @@ function getRatePerMinute(recipe: Recipe, outputItemId: string): number {
 
 // ── Calculator ─────────────────────────────────────────────────────────────
 
-export function calculate(itemId: string, rate: number, overrides: Record<string, string> = {}, visited = new Set<string>()): ProductionNode {
+export function calculate(
+    itemId: string,
+    rate: number,
+    overrides: Record<string, string> = {},
+    surplusRequirements: Record<string, number> = {},
+    visited = new Set<string>(),
+): ProductionNode {
     const item = items[itemId]
     const recipe = getRecipe(itemId, overrides)
     const isRawResource = item?.isResource ?? false
@@ -41,6 +47,7 @@ export function calculate(itemId: string, rate: number, overrides: Record<string
             power: 0,
             inputs: [],
             byproducts: [],
+            surplus: 0,
         }
     }
 
@@ -51,11 +58,11 @@ export function calculate(itemId: string, rate: number, overrides: Record<string
     const machines = rate / ratePerMachine
     const power = machines * (building?.power ?? 0)
 
-    // Recursively calculate inputs
+    // Recursively calculate inputs, adding any surplus requirements
     const inputs: ProductionNode[] = recipe.inputs.map(input => {
         const inputRatePerMachine = (input.amount / recipe.time) * 60
-        const inputRate = inputRatePerMachine * machines
-        return calculate(input.item, inputRate, overrides, new Set(visited))
+        const inputRate = inputRatePerMachine * machines + (surplusRequirements[input.item] ?? 0)
+        return calculate(input.item, inputRate, overrides, surplusRequirements, new Set(visited))
     })
 
     // Collect byproducts (outputs other than the primary item)
@@ -77,5 +84,6 @@ export function calculate(itemId: string, rate: number, overrides: Record<string
         power,
         inputs,
         byproducts,
+        surplus: surplusRequirements[itemId] ?? 0,
     }
 }

@@ -51,6 +51,7 @@ export interface ProductionNode {
     power: number      // MW
     inputs: ProductionNode[]
     byproducts: Byproduct[]
+    surplus: number    // items/min to store
 }
 
 export interface GraphOptions {
@@ -68,4 +69,5 @@ export interface GraphCallbacks {
 export interface GraphState {
     doneNodes: Record<string, boolean>
     collapsedNodes: Record<string, boolean>
+    surplusRequirements?: Record<string, number>
 }

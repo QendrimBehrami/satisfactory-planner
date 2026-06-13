@@ -108,6 +108,34 @@ function buildNodesAndEdges(
         })
     }
 
+    if (node.surplus > 0) {
+        const surplusId = `surplus-${node.itemId}-${nodes.length}`
+        nodes.push({
+            id: surplusId,
+            position: { x: 0, y: 0 },
+            data: {
+                label: node.itemName,
+                rate: node.surplus,
+                itemId: node.itemId,
+                isOutput: true,
+                isSurplus: true,
+                hasParent: false,
+                inputs: [],
+                availableRecipes: [],
+                horizontalLayout: options.horizontalLayout ?? false,
+            },
+            type: 'production',
+        })
+        edges.push({
+            id: `${id}-${surplusId}`,
+            source: id,
+            target: surplusId,
+            type: 'smoothstep',
+            markerEnd: { type: MarkerType.Arrow, width: 20, height: 20 },
+            animated: options.animatedEdges ?? false,
+        })
+    }
+
     if (!isCollapsed) {
         for (const input of node.inputs) {
             buildNodesAndEdges(input, nodes, edges, id, options, callbacks, state)
