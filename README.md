@@ -4,7 +4,7 @@ A production chain calculator for Satisfactory 1.0. Plan your factories with an 
 
 ## Live Demo
 
-https://qendrimbehrami.github.io/satisfactory-planner/
+https://recas4.github.io/satisfactory-planner/
 
 ## Setup
 ```bash
